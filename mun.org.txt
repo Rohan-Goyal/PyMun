@@ -602,6 +602,18 @@ class ConfigForm(FlaskForm):
 
 * Criterion D
 ** Script
+(Intro)
+First, I'll outline the code structure, and demonstrate what makes the design extensible. We can see that the code is broken into three files: utils.py, webform.py, and odf-manip.py. Utils includes utilities for interacting with google drive (and most of the main code), odf-manip includes functions for parsing and reading odf (open document format) and docx files,
+
+
+** Extensibility
+- Show that the code is neatly broken into files and functions
+- Show how I import funcs between different files, so that code can be reused in different contexts.
+- Show that the customClassifier is separated from the default classifier
+- Demonstrate how we can apply new functions to the google doc just by adding it to the updatemetadata or batchProcess functions
+- Show how we can define new custom rules as boolean functions.
+- Show that the UI is broken up into bits. So we can easily add in components, or change the styling, without needing to overhaul everything.
+- Overuse the phrase 'separation of concerns.
 ** Outline of plan
 - Show custom rules settings
 - Create custom rule
@@ -613,6 +625,15 @@ class ConfigForm(FlaskForm):
 - Open a file to show the links have been formatted properly
 - Consider showing an (already) formatted resolution.
 - Show re- and de-auth functions
+** COMMENT Success Criteria
+- NOTE: These are all shown already by the outline below, so just use that.
+- Adds metadata
+- OAuth
+- Classify docs
+- HTML GUI
+- Links,  classifying some HTML files/PDFS as research sources
+- Demonstrate link formatting
+
 * Criterion E
 ** COMMENT Success Criteria
 See OOWriter file

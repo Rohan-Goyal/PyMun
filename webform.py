@@ -1,19 +1,16 @@
-from utils import authorisedDrive, deAuthorise, getMainFolder
 from json import dump, load
-from flask import Flask, render_template, flash, request, redirect
-from werkzeug.datastructures import ImmutableMultiDict, MultiDict
-from wtforms import (
-    TextField,
-    validators,
-    # StringField,
-    SubmitField,
-    BooleanField,
-    SelectField,
-)
-from flask_wtf import FlaskForm
-from webbrowser import open as browse
 from threading import Timer
 from time import sleep
+from webbrowser import open as browse
+
+from flask import Flask, flash, redirect, render_template, request
+from flask_wtf import FlaskForm
+from werkzeug.datastructures import ImmutableMultiDict, MultiDict
+from wtforms import (BooleanField, SelectField, SubmitField,  # StringField,
+                     TextField, validators)
+
+from utils import authorisedDrive, deAuthorise, getMainFolder
+
 # App config.
 DEBUG = True
 app = Flask(__name__)

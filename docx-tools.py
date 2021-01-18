@@ -1,24 +1,25 @@
 # Basically the file where I put everything that messes with ODF files
-import docx
-import re
-from docx2txt import process as asTxt
-from os import path
-from docx2python import docx2python
-from pprint import pprint
-from pathlib import Path
-from re import findall
-from types import GeneratorType
-from math import floor
-from urllib.parse import urlparse
-from bs4 import BeautifulSoup
-import requests
-from docx.text.run import Run
-from urlextract import URLExtract
-from string import ascii_lowercase
-import zipfile
 import shutil
-from send2trash import send2trash
+import zipfile
 from json import load
+from math import floor
+from os import path
+from pathlib import Path
+from pprint import pprint
+from re import findall
+from string import ascii_lowercase
+from types import GeneratorType
+from urllib.parse import urlparse
+
+import docx
+import requests
+from bs4 import BeautifulSoup
+from docx2python import docx2python
+from docx2txt import process as asTxt
+from docx.text.run import Run
+from send2trash import send2trash
+from urlextract import URLExtract
+
 appname = "pyMUN"
 
 

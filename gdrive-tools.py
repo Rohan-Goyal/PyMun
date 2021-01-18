@@ -1,14 +1,14 @@
+import json
+import os
+from pprint import pprint
+from threading import Timer
+
 from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
-
-# from pydrive2 import drive as somedrive
 from send2trash import send2trash
-from threading import Timer
-from pprint import pprint
-import os
-import json
 
-from odf_manip import magicParse, customClassify, replaceLinks
+from odf_manip import customClassify, magicParse, replaceLinks
+
 """
 metadata_format = {
         "type": ("source", "note", "position", "resolution", "unclassified"),
@@ -501,7 +501,7 @@ def main():
 
 # if __name__ == "__main__":
 #    main()
-batchProcess()
+# batchProcess()
 # x = getAllFiles("Hello.txt")
 # print(len(x))
 # pprint(x[0])
