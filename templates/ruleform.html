@@ -1,0 +1,43 @@
+<!-- <link rel="stylesheet" media="screen" href="static/bootstrap.min.css">
+     <link rel="stylesheet" href="static/bootstrap-theme.min.css">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+<!-- <form class="custom-rule-holder form-inline" role="form" method="post"> -->
+<!-- I give a lot of things the class {{regex}} as a hacky way of giving them a unique identifier. I am not a web developer, as I'm sure you can tell. -->
+    <fieldset class="custom-rule form-inline {{ regex }}-fieldset">
+
+        <label for="type">If </label><select name="type" class="form-control {{ regex }} type">
+            <option value="name" >name contains</option>
+            <option value="contains"> document text contains</option>
+        </select>
+
+        <label for="text"></label><input type="text" name="text" class="form-control" value="{{ regex }}">
+        <label for="doctype">Then classify it as a </label><select name="doctype"value="source" class="{{ regex }} form-control doctype">
+            <option value="position">Position Paper</option>
+            <option value="resolution">Resolution</option>
+            <option value="source">Research Source</option>
+            <option value="note">Notes</option>
+        </select>
+	      &nbsp;	&nbsp;	&nbsp;
+        <button onclick="delSelf('{{ regex }}')" type="button" class="btn btn-danger close" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        <script>
+         var regex="{{ regex|safe }}";
+         var fields=document.getElementsByClassName(regex);
+         var typefield=fields[0];
+         typefield.value="{{ type|safe }}";
+         var doctypefield=fields[1];
+         doctypefield.value="{{ doctype|safe }}";
+
+         function removeElement(element) {
+             // Removes an element from the document
+             element.parentNode.removeChild(element);
+         }
+         function delSelf(keyword) {
+             // Deletes this fieldset
+             var target=document.getElementsByClassName(keyword+"-fieldset")[0];
+             removeElement(target);
+         }
+        </script>
+    </fieldset>
+    <!-- </form> -->

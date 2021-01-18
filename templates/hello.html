@@ -1,0 +1,84 @@
+<title>PyMUN Configuration</title>
+        	 	<link rel="stylesheet" media="screen" href="static/bootstrap.min.css">
+        	 	<link rel="stylesheet" href="static/bootstrap-theme.min.css">
+       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<div class="container">
+<h2>Configure PyMUN Behaviour</h2>
+<form action="" method="post" role="form">
+    <div class="form-group">
+        <p>{{ form.delay.label }}<br>
+            {{ form.delay(class_="form-control") }}
+        </p>
+        <small class="form-text text-muted">{{ form.delay.description }}</small><br>
+        <p> {{ form.autoformat.label }}<br>
+            {{ form.autoformat(class_="form-control") }}</p>
+        <small class="form-text text-muted">{{ form.autoformat.description }}</small><br>
+        <p> {{ form.folderpath.label }}<br>
+            {{ form.folderpath(class_="form-control") }}</p>
+        <small class="form-text text-muted">{{ form.folderpath.description }}</small><br>
+    <button class="btn"><a href={{ link() }} target="_blank">View Folder</a></button>
+</div>
+<div id="auth-deauth">
+    <a href="{{ url_for( 'auth') }}" class="btn btn-primary">Re-Authorise Application</a>
+    <a href="{{ url_for( 'deauth') }}"  class="btn btn-primary">De-Authorise Application</a></div>
+<br><br><legend><h4>Custom Rules for classification</h4></legend><br>
+<div id="rule-holder"></div><br>
+{%- for (type, regex, doctype) in rules() %}
+{% include "ruleform.html" ignore missing %} {# And ruleform uses the variables type, regex, doctype #}
+{% endfor %}
+<br>
+<button class="btn btn-primary" id="rule-button">New custom rule</button>
+</div>
+<br><br>
+<button type="submit" class="btn btn-success">Save Settings</button>
+</form>{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+
+{% for message in messages %}
+{% if "Error" not in message[1]: %}
+<div class="alert alert-info">
+                <strong>Success! </strong> {{ message[1] }}</div>
+{% endif %}
+
+{% if "Error" in message[1]: %}
+<div class="alert alert-warning">
+                {{ message[1] }}</div>
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+</div>
+<script>
+ function createRuleElem(){
+     var fieldset=`<fieldset class="custom-rule form-inline">
+
+            <label for="type">If</label><select name="type" class="form-control">
+                <option value="name">name contains</option>
+                <option value="contains">document text contains</option>
+            </select>
+
+            <label for="text"></label><input type="text" name="text" class="form-control" value="some_text">
+
+            <label for="doctype">then classify it as a</label><select name="doctype" class="form-control" value="resolution">
+                <option value="position">Position Paper</option>
+                <option value="resolution">Resolution</option>
+                <option value="source">Research Source</option>
+                <option value="note">Notes</option>
+            </select>
+
+<button type="button" class="close" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+</fieldset><br>`;
+
+     var div=document.getElementById("rule-holder");
+     div.innerHTML+=fieldset;
+ }
+ document.getElementById("rule-button").addEventListener("click", function(event){
+     event.preventDefault()
+     createRuleElem();
+     return false;
+
+ });
+</script>
