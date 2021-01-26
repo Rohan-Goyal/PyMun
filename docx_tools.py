@@ -16,7 +16,6 @@ import requests
 from bs4 import BeautifulSoup
 from docx2python import docx2python
 from docx2txt import process as asTxt
-from docx.text.run import Run
 from send2trash import send2trash
 from urlextract import URLExtract
 
@@ -396,16 +395,6 @@ def getLinkData(url):
         return {**getHtmlData(response.content), "source": source}
     else:
         return {"source": source, "web_title": url.split("/")[-1]}
-
-
-def getTitleAndSource(url):
-    response = requests.get(url)
-    source = urlparse(url).netloc.replace(
-        "www.",
-        "")  # Consider replacing the last bit of the domain name (.org, etc)
-    soup = BeautifulSoup(response.content, features="lxml")
-    title = soup.title.string
-    return {"web_title": title, "source": source}
 
 
 # DONE: Test on some HTML pages (actual sources I used for MUN)

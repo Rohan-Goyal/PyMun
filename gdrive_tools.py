@@ -7,7 +7,7 @@ from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
 from send2trash import send2trash
 
-from odf_manip import customClassify, magicParse, replaceLinks
+from docx_tools import customClassify, magicParse, replaceLinks
 
 """
 metadata_format = {
@@ -501,16 +501,7 @@ def main():
 
 # if __name__ == "__main__":
 #    main()
-# batchProcess()
-# x = getAllFiles("Hello.txt")
-# print(len(x))
-# pprint(x[0])
-# print(x[0]["title"])
-# y = getExistingFolder("unclassified", "root")
-# pprint(listFiles(y))
-# z=createLink(x, y)
-# z.Upload()
-# batchProcess()                  #
+batchProcess()
 """
 DONE mainFolder is a slight issue, all the rest are manageable
 DONE sortAllFiles and its dependencies are issues since they require a well-defined type dict
