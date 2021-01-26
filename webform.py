@@ -1,3 +1,4 @@
+#! /usr/bin/env ipython3
 from json import dump, load
 from threading import Timer
 from time import sleep
@@ -9,7 +10,7 @@ from werkzeug.datastructures import ImmutableMultiDict, MultiDict
 from wtforms import (BooleanField, SelectField, SubmitField,  # StringField,
                      TextField, validators)
 
-from utils import authorisedDrive, deAuthorise, getMainFolder
+from gdrive_tools import authorisedDrive, deAuthorise, getMainFolder
 
 # App config.
 DEBUG = True
@@ -80,7 +81,7 @@ class ConfigForm(FlaskForm):
             # Save the comment here.
             flash("Changes saved")
 
-        return render_template("hello.html", form=form)
+        return render_template("config-form.jinja.html", form=form)
 
     @app.context_processor
     def utility_processor():

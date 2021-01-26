@@ -1,5 +1,7 @@
+#+LATEX_HEADER: \usepackage[margin=0.8in]{geometry}
+#+OPTIONS: toc:nil
 * Criterion A
-** Defining the Problem
+** COMMENT Defining the Problem
 My client is ***, the supervisor of the school's MUN (Model United Nations) club. With her advice/supervision, I intend to develop a software solution which makes preparation for MUN easier for participating students.
 Presently, students preparing for MUN conferences face a variety of inconveniences when managing documents for various conferences. Without a tedious method of manually filing documents, links, resources, etc. it is easy to lose track of which documents correspond to which committee/agenda. It is also easy to lose track of resources and research - since research is often a mix of PDF files and links, searching for information across sources is hardly straightforward. Being able to index links and PDFs like this would make it a lot easier to write papers without getting lost in thousands of tabs.
 I intend to create a system which, based on some user configuration, is automatically able to track and manage information in a way optimised for MUN people. This includes being able to parse (and ideally process) semantic units such clauses, subclauses, paragraphs, conclusions, etc. Based on these, it will provide functions to search and sort documents. For instance, it might parse a "research notes" document into a series of factoids, which could be searched for in one window while editing a position paper in another.
@@ -27,6 +29,7 @@ NOTE: This would be perfect with emacs yasnippet+swoop+org, but NO. Apparently m
 - Able to manage research resources, including dealing with links
 - Extracted links should automatically include title, metadata
 - Integrates with existing document management systems (whether Zotero, Onedrive, Google Drive, etc.)
+- Program should run in the background periodically
 # [IDEA: Check browser tabs to see if file is open before edits. Use brotab]
 
 **** Functionality
@@ -37,19 +40,23 @@ NOTE: This would be perfect with emacs yasnippet+swoop+org, but NO. Apparently m
 - Replace naked links (when it's just http://, no fancy link text) in documents with a markdown-style syntax that includes some link metadata (title, source)
 
 **** Configurability
-- Custom rules, for classifying documents, based on the following criteria:
+- Users define how frequently they want the program to run
+- Users can decide whether or not the program should auto-format documents
+- User can tell the program to look in a specific folder or sub-folder in their google drive, using normal file-path syntax (such as "/Documents/MUN")
+- Users must be able to easily re-authorise and de-authorise the program (for privacy/security reasons)
+- Users should be able to specify custom rules, for classifying documents, based on the following criteria:
   - Contains <phrase>
   - Name=<phrase>
 #  - Age=<number of days> (Age will be computed) based on the files last-modified date and the current date. All calculations will be done in UTC.
 
-** Solution and Rationale
+** COMMENT Solution and Rationale
 My final decision was to create a Python application with a minimal web GUI that manages the user's Google Drive files. It will allow users to create their initial configuration, and based on this configuration, it will run in the background and "watch" their Google drive, making the requisite changes. Something like this requires the ability to auto-start and run in the background on the user's machine, and so it has to use a native program rather than a web app or electron monstrosity.
 It will be necessary to use a language that compiles easily for all systems, since the target audience uses a mixture of Windows and MacOS devices (I myself use Linux).
 I chose Python because it has a lot of simple libraries and APIs that can interface with google services. Specifically, google provides a set of APIs for dealing with docs, and third parties also provide more convenient wrappers such as PyDrive. Since much of the data will deal with semantic markup and document metadata, it will be represented internally using XML or JSON flat files. Python has excellent support for both of those, including converting them to and from native data structures.
 Furthermore, I have worked with python on previous projects in the past and so using something which I'm familiar with should save on development time and minimise errors.
 [20 more words]
 
-* Criterion B
+* COMMENT Criterion B
 ** COMMENT Record of Tasks
 See excel
 
@@ -234,7 +241,7 @@ Call the ~classifier()~ function on 3 different kinds of documents in Google Dri
 ** COMMENT Flowcharts
 - Auto-formatting: Indentation
 
-* Criterion C
+* COMMENT Criterion C
 ** UML
 *** batchProcess() function: High-level overview of how the program works
 
@@ -600,9 +607,10 @@ class ConfigForm(FlaskForm):
 
 - Pythonspot, 2020. Python Tree Data Structure. [online] pythonspot. Available at: <https://pythonspot.com/python-tree/> [Accessed 10 October 2020].
 
-* Criterion D
+* COMMENT Criterion D
 ** Script
 (Intro)
+Welcome to my Computer Science IA Criterion D video documentation. My product is a desktop application to help students manage their MUN research resources and documents in google drive, and my client is the supervisor of our school's MUN club.
 First, I'll outline the code structure, and demonstrate what makes the design extensible. We can see that the code is broken into three files: ~gdrive_tools.py, docx_tools.py, and webform.py~.
 ~gdrive_tools~ includes utilities for interacting with google drive (and most of the main code), ~docx_tools~ includes functions for parsing and reading docx files (word documents), and ~webform~ includes a Flask object which defines the User Interface, and some utilities to help it interact with the other files.
 Within each file, the code is broken down into separate functions, with some simple objects there as well.
@@ -651,7 +659,7 @@ The actual app would run periodically, and it would only download and analyse fi
 - Links,  classifying some HTML files/PDFS as research sources
 - Demonstrate link formatting
 
-* Criterion E
+* COMMENT Criterion E
 ** COMMENT Success Criteria
 See OOWriter file
 ** COMMENT Testing
@@ -680,7 +688,6 @@ However, since Microsoft Word is proprietary, it's unknown how much they adhere 
 ** COMMENT Extensibility (Technical)
 I've used separation of concerns to decouple the UI presentation from the actual parsing of the settings. This means that UI improvements can be made with minimal hassle.
 Similarly, the 'customisable' elements, such as the custom rules for classifiers, are separated from the program's own heuristic classifications and encapsulated within their own functions. Thus, it would be easy to introduce additional rules without modifying the core logic of the program, and to introduce more specific filtering mechanisms.
-
 
 
 * COMMENT Planning for the MUN product
@@ -793,7 +800,7 @@ So we pass the file object directly. We try it against the namerules, or
 - Ask Ms. Almas about personal information in the video
 - Ask her if I should include results from unit tests, etc. in criterion D/E
 - Ms. Rizwana: Feedback via text/email
-* Footnotes
+* COMMENT Footnotes
 
 [fn:7] Pallets, n.d. Template Designer Documentation — Jinja Documentation (2.11.X). [online] Jinja.palletsprojects.com. Available at: <https://jinja.palletsprojects.com/en/2.11.x/templates/> [Accessed 13 January 2021].
 

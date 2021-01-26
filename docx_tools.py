@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 # Basically the file where I put everything that messes with ODF files
 import shutil
 import zipfile
@@ -236,7 +237,7 @@ def extractMetadata(docArr):
     # Everything up till here is good. The problem now is that resolution headers have committee names as the first line in bold, without any key:value syntax. How to get that
     # Everything below here is hacky and I want to fix it.
     if agenda:
-        result.update({"agenda": cleanString(agenda[0], "agenda")})
+        result.update({"agenda": cleanString(agenda[0], "topic")})
     if committee:
         result.update({"committee": cleanString(committee[0], "committee")})
     if country:
@@ -321,8 +322,8 @@ def magicParse(path):
     documentType = docType(path)
     metadata = extractMetadata(getBody(asArr(path)))
     return ({
+        "committee": getCommittee(path),
         **metadata, "type": documentType,
-        "committee": getCommittee(path)
     } if documentType == "resolution" and getCommittee(path) else {
         **metadata, "type": documentType
     })

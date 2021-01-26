@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 import json
 import os
 from pprint import pprint
@@ -327,7 +328,6 @@ def updateMetadata(fileObj):
     fileObj.SetContentFile(localMeta["path"])
     if filetype in ("gdoc", "word"):
         # Do the docx parsing magic on that doc, convert the return values into metadata.
-        print(magicParse(localMeta["path"]))
         result.update(magicParse(localMeta["path"])
                       )  # DONE Should get type, agenda, committee, country
         custom = customClassify(localMeta["name"], localMeta["path"])
