@@ -56,7 +56,7 @@ I chose Python because it has a lot of simple libraries and APIs that can interf
 Furthermore, I have worked with python on previous projects in the past and so using something which I'm familiar with should save on development time and minimise errors.
 [20 more words]
 
-* COMMENT Criterion B
+* Criterion B
 ** COMMENT Record of Tasks
 See excel
 
@@ -241,7 +241,7 @@ Call the ~classifier()~ function on 3 different kinds of documents in Google Dri
 ** COMMENT Flowcharts
 - Auto-formatting: Indentation
 
-* COMMENT Criterion C
+* Criterion C
 ** UML
 *** batchProcess() function: High-level overview of how the program works
 
@@ -659,7 +659,7 @@ The actual app would run periodically, and it would only download and analyse fi
 - Links,  classifying some HTML files/PDFS as research sources
 - Demonstrate link formatting
 
-* COMMENT Criterion E
+* Criterion E
 ** COMMENT Success Criteria
 See OOWriter file
 ** COMMENT Testing
@@ -667,24 +667,30 @@ How to go about this? I should check with Ms. Almas.
 ** Client Feedback
 ** Potential Improvements
 *** Better heuristics based on user feedback
-Since the only samples of MUN documents I had were my own (and those of some of my friends), some of the heuristics I use reflect my own idiosyncracies, or on conventions which might not be universal. With wider usage, I'll be able to determine these failings and correct for them.
+Since the only samples of MUN documents I had were my own (and those of some of my friends), some of the heuristics I use reflect my own idiosyncracies, or on conventions which might not be universal. With wider usage, I'll be able to determine these failings and correct for them. If there are custom classifications that a lot of users implement, I might include those as defaults within the main program.
 
-*** Reliable intelligent auto-formatting
+*** COMMENT Reliable intelligent auto-formatting
 
 *** Better rewriting/modifying documents
+Modifying documents requires tinkering with a word document, which has an extremely complicated (and honestly quite opaque) specification, and its difficult to do so while preserving structure and formatting. More reliable ways to rewrite documents would make the auto-formatting feature more reliable. If any libraries exist for this they could be used, or we could implement various useful functions (such as modifying formatting, etc.) by modifying the XML.
 
 *** Associate files with specific conferences, and sort them accordingly.
+Currently, files can be associated with committees and topics. However, they can't be associated with specific dates and conferences. Doing so would allow users to 'archive' past documents and focus only on present conferences. It would also give users more
 
-*** Auto-open UI
+*** COMMENT Auto-open UI
+
 
 *** Performance Improvements
 As it stands, the program takes quite a long time to run, since it needs to download and process a lot of documents. There are a variety of changes which would likely improve performance.
 For Google Docs, it's possible to analyse the document without downloading the entire thing, using the Google Docs API. I should introduce functionality which can accomplish that. It would mean that only Word documents would need to be fully downloaded, thus improving the program's performance.
+Currently, the program either ignores a document, or downloads it and classifies/modifies it from scratch.
 
 *** Rewrite based on official specs
+
 However, since Microsoft Word is proprietary, it's unknown how much they adhere to the specifications.
 
 *** Automatically create shortcuts within the requisite folders
+Google Drive no longer allows files to exist in multiple folders. Instead, they have introduced a shortcut mechanism where we can create multiple links to files within folders. Although this can be done using google's REST API (i.e. commands can be called using formatted https requests) it doesn't expose that functionality through pydrive. Introducing this functionality and integrating it with my code would be extremely helpful.
 ** COMMENT Extensibility (Technical)
 I've used separation of concerns to decouple the UI presentation from the actual parsing of the settings. This means that UI improvements can be made with minimal hassle.
 Similarly, the 'customisable' elements, such as the custom rules for classifiers, are separated from the program's own heuristic classifications and encapsulated within their own functions. Thus, it would be easy to introduce additional rules without modifying the core logic of the program, and to introduce more specific filtering mechanisms.
