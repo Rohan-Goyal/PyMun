@@ -1,11 +1,11 @@
 #+LATEX_HEADER: \usepackage[margin=0.8in]{geometry}
+#+LATEX_HEADER: \raggedright
 #+OPTIONS: toc:nil
 * Criterion A
-** COMMENT Defining the Problem
-My client is ***, the supervisor of the school's MUN (Model United Nations) club. With her advice/supervision, I intend to develop a software solution which makes preparation for MUN easier for participating students.
+** Defining the Problem
+My client is +Ms. Rizwana+, the supervisor of the school's MUN (Model United Nations) club. With her advice and supervision, I intend to develop a software solution which makes preparation for MUN easier for participating students (See Appendices 1-TODO for discussion).
 Presently, students preparing for MUN conferences face a variety of inconveniences when managing documents for various conferences. Without a tedious method of manually filing documents, links, resources, etc. it is easy to lose track of which documents correspond to which committee/agenda. It is also easy to lose track of resources and research - since research is often a mix of PDF files and links, searching for information across sources is hardly straightforward. Being able to index links and PDFs like this would make it a lot easier to write papers without getting lost in thousands of tabs.
-I intend to create a system which, based on some user configuration, is automatically able to track and manage information in a way optimised for MUN people. This includes being able to parse (and ideally process) semantic units such clauses, subclauses, paragraphs, conclusions, etc. Based on these, it will provide functions to search and sort documents. For instance, it might parse a "research notes" document into a series of factoids, which could be searched for in one window while editing a position paper in another.
-
+I intend to create a system which, based on some user configuration, is automatically able to track and manage information in a way optimised for MUN participants. This includes being able to parse (and ideally process) semantic units such clauses, subclauses, paragraphs, conclusions, etc. Based on these, it will provide functions to search and sort documents. This system will classify documents based on their purpose/type (such as a script for a speech, a position paper, notes, etc.), and based on the committee and agenda they relate to, allowing students to more easily focus on one specific agenda/conference at a time.
 ** COMMENT Crud
 python application (with a minimal web GUI, and also a CLI so that I can actually use it) which, based on some simple initial configurations, is able to automatically create and analyse metadata for certain files, sort them into folders (including using links to show them in multiple folders). The solution will interface with the user's Google Drive using the PyDrive library/API, and manage documents that way.
 As a member of the MUN club myself, I've faced these problems and in my experience they aren't exactly
@@ -14,32 +14,41 @@ As a member of the MUN club myself, I've faced these problems and in my experien
 NOTE: This would be perfect with emacs yasnippet+swoop+org, but NO. Apparently most of the world is too dumb to use an editor from the 60s written in LISP.
 (I personally use linux, and can run python scripts without all that bother. But alas, other people use things not designed to be scripted and so I must use Drive APIs and PyInstaller).
 
+** Solution and Rationale
+My decision is to create a Python application with a minimal web GUI that manages the user's Google Drive files. Based on the user's configuration, it will run in the background and "watch" their Google drive, making the requisite changes. Something like this requires the ability to auto-start and run in the background on the user's machine, and so it has to use a native program rather than a web app or electron monstrosity.
+It will be necessary to use a language that compiles for all systems, since the target audience uses a mixture of Linux, MacOS and Windows devices (See appendix TODO for discussion of these requirements).
+Students have different workflows for managing documents, so the program must have a configuration UI for users, ideally one they're familiar with. Thus, the configuration UI will be based on a webform.
+The aim of this program is to automate file management for users. Thus, it needs to run in the background since forcing users to run it manually defeats the purpose.
+I chose Python because it has a lot of simple libraries and APIs that can interface with google services. Specifically, google provides a set of APIs for dealing with docs, and third parties also provide more convenient wrappers such as PyDrive. Since much of the data will deal with semantic markup and document metadata, it will be represented internally using XML or JSON flat files. Python has excellent support for both of those, including converting them to and from native data structures.
+# Furthermore, I have worked with python on previous projects in the past and so using something which I'm familiar with should save on development time and minimise errors.
+
 ** Success Criteria
+
+*** General
 - Able to parse a Google docs document and add custom metadata tags.
 - Uses OAuth to access google drive, and stores client secrets securely.
 - Tags/metadata includes the document type (position paper, research, free notes, clause/resolution drafts), committee, country, agenda.
-- Able to use links/references to place files in multiple folders based on metadata
+# - Able to use links/references to place files in multiple folders based on metadata
 # - Has internal representation of folder hierarchies, files as objects, etc. (more design principle than criterion)
-- Able to classify and auto-format different kinds of documents.
 - Process documents, and interpret them as data structures (whether through markup language, hashtables, trees, whatever) which enable better parsing, searching and formatting of documents
 - Auto-formats clauses, including indentation, lists, sublists, etc.
-- Has ability to handle ambiguity or poorly-formatted documents.
-- Presumably does this through parsing ambiguous sections as something like annotations, and parsing the rest.
-- HTML GUI (localhost) which could be operated by a child of five (with regards to Groucho Marx)
+# - Has ability to handle ambiguity or poorly-formatted documents.
+# - Presumably does this through parsing ambiguous sections as something like annotations, and parsing the rest.
+- HTML GUI (localhost) which could be operated by a child of five
 - Able to manage research resources, including dealing with links
 - Extracted links should automatically include title, metadata
-- Integrates with existing document management systems (whether Zotero, Onedrive, Google Drive, etc.)
+- Integrates with existing document management systems (Zotero, Onedrive, Google Drive, etc.)
 - Program should run in the background periodically
 # [IDEA: Check browser tabs to see if file is open before edits. Use brotab]
 
-**** Functionality
+*** Functionality
 - Attach custom tags to documents
 - Put links in folders accordingly
 - For clause/resolution docs, auto-format the commas, semi-colons, sublists, etc.
 # - GDrive GUI option to archive a particular conference folder: Adds the "archive" tag/metadata to all assoc'd files
-- Replace naked links (when it's just http://, no fancy link text) in documents with a markdown-style syntax that includes some link metadata (title, source)
+- Replace naked links (when it's just http://, no fancy link text) in documents with a markdown-style syntax that includes the link's title and source
 
-**** Configurability
+*** Configurability
 - Users define how frequently they want the program to run
 - Users can decide whether or not the program should auto-format documents
 - User can tell the program to look in a specific folder or sub-folder in their google drive, using normal file-path syntax (such as "/Documents/MUN")
@@ -48,13 +57,6 @@ NOTE: This would be perfect with emacs yasnippet+swoop+org, but NO. Apparently m
   - Contains <phrase>
   - Name=<phrase>
 #  - Age=<number of days> (Age will be computed) based on the files last-modified date and the current date. All calculations will be done in UTC.
-
-** COMMENT Solution and Rationale
-My final decision was to create a Python application with a minimal web GUI that manages the user's Google Drive files. It will allow users to create their initial configuration, and based on this configuration, it will run in the background and "watch" their Google drive, making the requisite changes. Something like this requires the ability to auto-start and run in the background on the user's machine, and so it has to use a native program rather than a web app or electron monstrosity.
-It will be necessary to use a language that compiles easily for all systems, since the target audience uses a mixture of Windows and MacOS devices (I myself use Linux).
-I chose Python because it has a lot of simple libraries and APIs that can interface with google services. Specifically, google provides a set of APIs for dealing with docs, and third parties also provide more convenient wrappers such as PyDrive. Since much of the data will deal with semantic markup and document metadata, it will be represented internally using XML or JSON flat files. Python has excellent support for both of those, including converting them to and from native data structures.
-Furthermore, I have worked with python on previous projects in the past and so using something which I'm familiar with should save on development time and minimise errors.
-[20 more words]
 
 * Criterion B
 ** COMMENT Record of Tasks
@@ -76,7 +78,7 @@ See excel
 #+DOWNLOADED: file:///home/rohan/Pictures/1609309565.png @ 2020-12-30 10:27:07
 [[file:Criterion_B/2020-12-30_10-27-07_1609309565.png]]
 (Created using Bootstrap Studio, a free mockup tool. A crude mockup of how the 'general settings' component of the settings view might look.)
-*** UI: Custom Rules
+*** COMMENT UI: Custom Rules
 *** Config options
 - Run every {n} minutes
 - Auto-format docs: y/n
@@ -161,10 +163,10 @@ class Tree:
     - Notes
     - Resources
     - Recent
-    - All Documents
+    - {All documents}
 
 ** Testing
-*** Preliminaries (setup)
+*** COMMENT Preliminaries (setup)
 - Create a throwaway Google account
 - Copy my various MUN documents/notes from my main Drive to the new Drive
 - Authorise my program to use this account
@@ -188,7 +190,7 @@ print(get_link_data("https://www.un.org/securitycouncil/content/resolutions-0"))
 #+END_SRC
 
 **** Auto-formatting functions on a local document
-- Create a local Word/Docx file with some intentional formatting errors (based on tinkering with an old MUN document a friend of mine created).
+- Create a local Word/Docx file with intentional formatting errors (based on tinkering with an old MUN document a friend of mine created).
 - Pass it through the auto-formatter. Inspect the output- this must be done by eye.
 
 **** Referencing/linking functions
@@ -650,7 +652,7 @@ The actual app would run periodically, and it would only download and analyse fi
 - Open a file to show the links have been formatted properly
 - Consider showing an (already) formatted resolution.
 - Show re- and de-auth functions
-** COMMENT Success Criteria
+** Success Criteria
 - NOTE: These are all shown already by the outline below, so just use that.
 - Adds metadata
 - OAuth
@@ -806,7 +808,10 @@ So we pass the file object directly. We try it against the namerules, or
 - Ask Ms. Almas about personal information in the video
 - Ask her if I should include results from unit tests, etc. in criterion D/E
 - Ms. Rizwana: Feedback via text/email
-* COMMENT Footnotes
+- Email thread appendix with Ms. Rizwana for crit A, outlining solutions and problems
+- Crit A: At least 3 pieces of evidence of consultation with client
+- Good to keep a few failed criteria.
+* Footnotes
 
 [fn:7] Pallets, n.d. Template Designer Documentation — Jinja Documentation (2.11.X). [online] Jinja.palletsprojects.com. Available at: <https://jinja.palletsprojects.com/en/2.11.x/templates/> [Accessed 13 January 2021].
 
@@ -822,3 +827,4 @@ So we pass the file object directly. We try it against the namerules, or
 [fn:2] Altenkirch, T., 2020. Coding Trees In Python. [video] Available at: <https://www.youtube.com/watch?v=7tCNu4CnjVc> [Accessed 10 October 2020].
 
 [fn:1] Bootstrap, 2020. Bootstrap 4.5.3 [library] Available at: <https://github.com/twbs/bootstrap>
+* Appendices
