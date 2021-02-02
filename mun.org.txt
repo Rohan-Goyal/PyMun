@@ -66,7 +66,25 @@ I chose Python because it has a lot of simple libraries and APIs that can interf
 * Criterion B
 ** COMMENT Record of Tasks
 See excel
+** Structure Diagram: Overview of program working
+#+DOWNLOADED: file:///home/rohan/Downloads/code2flow_VnMcbg.svg @ 2021-02-02 20:38:03
+[[file:Criterion_B/2021-02-02_20-38-03_code2flow_VnMcbg.svg]]
+*** COMMENT Rough drafting
+A user workflow basically looks like:
+- Configure the program
+- Launch the script (or have it launch automatically on startup)
+- Wait
+- Open up google drive
+- Use the features provided () to navigate through google drive more effectively.
 
+Program internal workflow looks like:
+- Scan files
+- Download necessary files
+- Parse the heck out of them
+- Modify documents
+- Reupload documents with all that stuff.
+- Wait
+- Do so again
 ** Flowcharts
 *** Process of getting link metadata
 #+DOWNLOADED: file:///home/rohan/Downloads/code2flow_BVudc9.svg @ 2020-09-16 12:34:06
@@ -827,13 +845,13 @@ So we pass the file object directly. We try it against the namerules, or
 - Crit A: At least 3 pieces of evidence of consultation with client
 - Good to keep a few failed criteria.
 - For test results: I should have them in criterion E as screenshots, but including some in the video is also good form
-- Flesh out crit D,E record of tasks
+# - Flesh out crit D,E record of tasks
 - GANTT
 - Structure diagram: Firstly a user story/workflow, and then possibly a listing of functions
 - Consider justifying design and data structures briefly
 - Flowcharts: About 5-6. So add more
 - It seems UML should be in crit B
-- Make sure each criterion is covered by the test plan.
+# - Make sure each criterion is covered by the test plan.
 * COMMENT Consulting
 - Compose message to Ms. Rizwana about this.
 - Send her brief outline of designs
