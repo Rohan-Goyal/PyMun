@@ -25,7 +25,7 @@ class ConfigForm(FlaskForm):
     )
     autoformat = BooleanField(
         "Auto-format Documents?",
-        description="Whether or not the app should auto-format resolution documents",
+        description="Whether or not the app should auto-format resolution documents. WARNING: Beta Feature - Proceed at your own risk",
     )
     folderpath = TextField(
         "Folder Path:",

@@ -501,7 +501,7 @@ def main():
 
 # if __name__ == "__main__":
 #    main()
-batchProcess()
+# batchProcess()
 """
 DONE mainFolder is a slight issue, all the rest are manageable
 DONE sortAllFiles and its dependencies are issues since they require a well-defined type dict
@@ -512,3 +512,6 @@ File metadata is unlikely to change over time. So when we run 'batchprocess', we
 a) no metadata
 b) missing metadata (i.e if the doctype is not clarified. The other stuff is tricky to get)
 """
+
+n=getChild("notes", "root")
+print(n["alternateLink"],n["title"])
