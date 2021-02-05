@@ -86,6 +86,9 @@ Program internal workflow looks like:
 - Wait
 - Do so again
 ** Flowcharts
+*** File Process function
+#+DOWNLOADED: file:///home/rohan/Downloads/code2flow_7VJvnF.svg @ 2021-02-03 13:11:05
+[[file:Criterion_B/2021-02-03_13-11-05_code2flow_7VJvnF.svg]]
 *** Process of getting link metadata
 #+DOWNLOADED: file:///home/rohan/Downloads/code2flow_BVudc9.svg @ 2020-09-16 12:34:06
 [[file:Criterion_B/2020-09-16_12-34-06_code2flow_BVudc9.svg]]
@@ -128,7 +131,6 @@ Program internal workflow looks like:
  "custom-rules":
     {"name": [{"regex":"[Pp]osition [Pp]aper","type":"position paper"}],
     "contains":[{"regex":"Urges","type":"resolution"}]}
-
 }
 #+END_SRC
 
@@ -207,20 +209,18 @@ class Tree:
 **** Drive retrieval/metadata manipulation functions (Success Criteria 2,7,9)
  Call the following code (It finds a file, reads the content, adds metadata, and reads that new metadata:
  #+BEGIN_SRC python
- x=getFile('Position Paper')
- print(readDriveFile(x))
- y=add_metadata(x,{'type':'position paper'})
- y.upload()
- print(get_metadata(y))
+x=getFile('Position Paper')
+y=addMetadata(x,{'type':'position paper'})
+y.Upload()
+print(getMetadata(y))
  #+END_SRC
 It should run without error and print {type:position paper}
 
-**** Link/html metadata functions (Success Criteria 6,12)
+**** Link metadata functions (Success Criteria 6,12)
 #+BEGIN_SRC  python
-print(get_html_data("./un_resolutions.html"))
-print(get_link_data("https://www.un.org/securitycouncil/content/resolutions-0"))
+print(getLinkData("https://www.un.org/securitycouncil/content/resolutions-0"))
 #+END_SRC
-
+It should correctly retrieve the webpage title, and the source website.
 **** Auto-formatting functions on a local document (Success Criteria 4,11)
 - Create a local Word/Docx file with intentional formatting errors (based on tinkering with an old MUN document a friend of mine created).
 - Pass it through the auto-formatter. Inspect the output- this must be done by eye.
@@ -234,12 +234,11 @@ link=createLink(paper,folder)
 link.Upload()
 #+END_SRC
 On visiting the folder in the Drive web interface, there should be a folder mun-unit-test with a file mun-paper in it.
-
+# Ran without error, but the file was not copied
 **** Link replacer functions (Success Criteria 6,12)
 #+BEGIN_SRC python
-fname="~/tmp/IOC_Extract.docx"
-d=replaceLinks(fname)
-d.save(f"{fname.replace('.docx','')}-links_replaced.docx")
+fname="/home/{user}/tmp/IOC_Extract.docx"
+replaceLinks(fname)
 #+END_SRC
 This should replace all the links in the given file with a string that includes metadata, and write that new file to the file ~{fname}-links_replaced.docx~. Then inspect that file to ensure link replacement went properly.
 
@@ -261,7 +260,7 @@ Call the ~classifier()~ function on 3 different kinds of documents in Google Dri
 - Check the file config.json: The file should reflect the typed values.
 - Click the 'view folder' link. It should go to the proper folder.
 
-*** Performance/stress-testing
+*** COMMENT Performance/stress-testing
 - Upload a large amount of MUN files (specifically, all of my notes and research for a particular conference) to a particular folder in Google Drive
 - Point the program to that folder using the configuration.
 - Run the program with the following prefix ~perf-record~. This profiles the memory, cpu, used by the program and writes it to the file perf.data
@@ -697,8 +696,18 @@ The actual app would run periodically, and it would only download and analyse fi
 * Criterion E
 ** COMMENT Success Criteria
 See OOWriter file
-** COMMENT Testing
-How to go about this? I should check with Ms. Almas.
+** Testing
+(All tests not mentioned here were demonstrated in the video documentation)
+*** Drive metadata manipulation
+#+DOWNLOADED: file:///home/rohan/Pictures/1612519926.png @ 2021-02-05 14:45:57
+[[file:Criterion_E/2021-02-05_14-45-57_1612519926.png]]
+
+*** Link metadata
+#+DOWNLOADED: file:///home/rohan/Pictures/1612520900.png @ 2021-02-05 14:46:07
+[[file:Criterion_E/2021-02-05_14-46-07_1612520900.png]]
+
+*** Referencing/linking functions TODO
+*** Link replacement/reformatting TODO
 ** Client Feedback
 ** Potential Improvements
 *** Better heuristics based on user feedback
@@ -841,16 +850,18 @@ So we pass the file object directly. We try it against the namerules, or
 - Ask Ms. Almas about personal information in the video
 # - Ask her if I should include results from unit tests, etc. in criterion D/E
 - Ms. Rizwana: Feedback via text/email
-- Email thread appendix with Ms. Rizwana for crit A, outlining solutions and problems
-- Crit A: At least 3 pieces of evidence of consultation with client
+- Email thread appendix with Ms. Rizwana for crit A, outlining solutions and problems - Crit A: At least 3 pieces of evidence of consultation with client
 - Good to keep a few failed criteria.
-- For test results: I should have them in criterion E as screenshots, but including some in the video is also good form
+# - For test results: I should have them in criterion E as screenshots, but including some in the video is also good form
 # - Flesh out crit D,E record of tasks
 - GANTT
-- Structure diagram: Firstly a user story/workflow, and then possibly a listing of functions
+# - Structure diagram: Firstly a user story/workflow, and then possibly a listing of functions
 - Consider justifying design and data structures briefly
-- Flowcharts: About 5-6. So add more
-- It seems UML should be in crit B
+# - Flowcharts: About 5-6. So add more
+# - It seems UML should be in crit B
+# - Flowcharts: B should have overview, and most of the charts
+# - C should have charts for specific fiddly bits.
+- Consider adding focus on client/objective in crit C
 # - Make sure each criterion is covered by the test plan.
 * COMMENT Consulting
 - Compose message to Ms. Rizwana about this.
@@ -875,6 +886,9 @@ So we pass the file object directly. We try it against the namerules, or
 [fn:1] Bootstrap, 2020. Bootstrap 4.5.3 [library] Available at: <https://github.com/twbs/bootstrap>
 * Appendices
 ** Crit A
+*** Initial Conversation
+*** Discussion of Problems, Finalising Solution
+*** Outlining Requirements
 ** Crit B
 ** Crit C
 ** Crit E

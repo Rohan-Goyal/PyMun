@@ -656,3 +656,8 @@ class Clause(Tree):
 
 """Get the document as a tree structure: So headings, subheadings, lists, sublists"""
 # TODO: Clause objects, autoformatting
+
+print(getLinkData("https://www.un.org/securitycouncil/content/resolutions-0"))
+
+fname="/home/rohan/tmp/IOC_Extract.docx"
+replaceLinks(fname)

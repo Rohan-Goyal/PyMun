@@ -513,5 +513,7 @@ a) no metadata
 b) missing metadata (i.e if the doctype is not clarified. The other stuff is tricky to get)
 """
 
-n=getChild("notes", "root")
-print(n["alternateLink"],n["title"])
+x=getFile('Position Paper')
+y=addMetadata(x,{'type':'position paper'})
+y.Upload()
+print(getMetadata(y))
