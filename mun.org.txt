@@ -3,11 +3,12 @@
 #+OPTIONS: toc:nil
 * Criterion A
 ** Defining the Problem
-My client is **, the supervisor of the school's MUN (Model United Nations) club. With her advice and supervision, I intend to develop a software solution which makes preparation for MUN easier for participating students (See appendix A-1 for discussion).
+My client is the supervisor of the school's MUN (Model United Nations) club. With her advice and supervision, I intend to develop a software solution which makes preparation for MUN easier for participating students (See appendix A-1 for discussion).
 
 Presently, students preparing for MUN conferences face a variety of inconveniences when managing documents for various conferences. Without a tedious method of manually filing documents, links, resources, etc. it is easy to lose track of which documents correspond to which committee/agenda. It is also easy to lose track of resources and research - since research is often a mix of PDF files and links, searching for information across sources is hardly straightforward. Being able to index links and PDFs like this would make it a lot easier to write papers without getting lost in thousands of tabs.
 
 I intend to create a system which, based on some user configuration, is automatically able to track and manage information in a way optimised for MUN participants. This includes being able to parse (and ideally process) semantic units such clauses, subclauses, paragraphs, conclusions, etc. Based on these, it will provide functions to search and sort documents. This system will classify documents based on their purpose/type (such as a script for a speech, a position paper, notes, etc.), and based on the committee and agenda they relate to, allowing students to more easily focus on one specific agenda/conference at a time.
+
 *Word Count:240*
 ** COMMENT Crud
 python application (with a minimal web GUI, and also a CLI so that I can actually use it) which, based on some simple initial configurations, is able to automatically create and analyse metadata for certain files, sort them into folders (including using links to show them in multiple folders). The solution will interface with the user's Google Drive using the PyDrive library/API, and manage documents that way.
@@ -48,13 +49,13 @@ I chose Python because it has a lot of simple libraries and APIs that can interf
 7. Integrates with existing document management systems (Zotero, Onedrive, Google Drive, etc.)
 8. Program should run in the background periodically
 *** Functionality
-9. Attach custom tags to documents
+9. [@9] Attach custom tags to documents
 10. Put links in folders accordingly
 11. For clause/resolution docs, auto-format the commas, semi-colons, sublists, etc.
 12. Replace naked links (when it's just http://, no fancy link text) in documents with a markdown-style syntax that includes the link's title and source
 
 *** Configurability
-13. Users define how frequently they want the program to run
+13. [@13] Users define how frequently they want the program to run
 14. Users can decide whether or not the program should auto-format documents
 15. User can tell the program to look in a specific folder or sub-folder in their google drive, using Unix path syntax (such as "/Documents/MUN")
 16. Users must be able to easily re-authorise and de-authorise the program (for privacy/security reasons)
@@ -63,7 +64,7 @@ I chose Python because it has a lot of simple libraries and APIs that can interf
     - Name=<phrase>
   # - Age=<number of days> (Age will be computed) based on the files last-modified date and the current date. All calculations will be done in UTC.
 
-* Criterion B
+* COMMENT Criterion B
 ** COMMENT Record of Tasks
 See excel
 ** Structure Diagram: Overview of program working
@@ -271,7 +272,7 @@ Call the ~classifier()~ function on 3 different kinds of documents in Google Dri
 - Note the time when the program exits
 - Look at the values in perf.data. If the program takes up more than 250MB of RAM or more than 10% of CPU on average, it needs further optimisation.
 
-* Criterion C
+* COMMENT Criterion C
 ** UML
 *** batchProcess() function: High-level overview of how the program works
 
@@ -693,7 +694,7 @@ The actual app would run periodically, and it would only download and analyse fi
 - Links,  classifying some HTML files/PDFS as research sources
 - Demonstrate link formatting
 
-* Criterion E
+* COMMENT Criterion E
 ** COMMENT Success Criteria
 See OOWriter file
 ** Testing
@@ -862,6 +863,8 @@ So we pass the file object directly. We try it against the namerules, or
 # - Flowcharts: B should have overview, and most of the charts
 # - C should have charts for specific fiddly bits.
 - Consider adding focus on client/objective in crit C
+- Add crit C appendix, acknowledging libraries used
+
 # - Make sure each criterion is covered by the test plan.
 * COMMENT Consulting
 - Compose message to Ms. Rizwana about this.
@@ -884,7 +887,7 @@ So we pass the file object directly. We try it against the namerules, or
 [fn:2] Altenkirch, T., 2020. Coding Trees In Python. [video] Available at: <https://www.youtube.com/watch?v=7tCNu4CnjVc> [Accessed 10 October 2020].
 
 [fn:1] Bootstrap, 2020. Bootstrap 4.5.3 [library] Available at: <https://github.com/twbs/bootstrap>
-* Appendices
+* COMMENT Appendices
 ** Crit A
 *** Initial Conversation
 *** Discussion of Problems, Finalising Solution
