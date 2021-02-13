@@ -3,7 +3,7 @@
 #+OPTIONS: toc:nil
 * Criterion A
 ** Defining the Problem
-My client is the supervisor of the school's MUN (Model United Nations) club. With her advice and supervision, I intend to develop a software solution which makes preparation for MUN easier for participating students (See appendix A-1 for discussion).
+My client is the supervisor of the school's MUN (Model United Nations) club. With their advice and supervision, I intend to develop a software solution which makes preparation for MUN easier for participating students (See appendix A-1 for discussion).
 
 Presently, students preparing for MUN conferences face a variety of inconveniences when managing documents for various conferences. Without a tedious method of manually filing documents, links, resources, etc. it is easy to lose track of which documents correspond to which committee/agenda. It is also easy to lose track of resources and research - since research is often a mix of PDF files and links, searching for information across sources is hardly straightforward. Being able to index links and PDFs like this would make it a lot easier to write papers without getting lost in thousands of tabs.
 
@@ -64,7 +64,7 @@ I chose Python because it has a lot of simple libraries and APIs that can interf
     - Name=<phrase>
   # - Age=<number of days> (Age will be computed) based on the files last-modified date and the current date. All calculations will be done in UTC.
 
-* COMMENT Criterion B
+* Criterion B
 ** COMMENT Record of Tasks
 See excel
 ** Structure Diagram: Overview of program working
@@ -272,7 +272,7 @@ Call the ~classifier()~ function on 3 different kinds of documents in Google Dri
 - Note the time when the program exits
 - Look at the values in perf.data. If the program takes up more than 250MB of RAM or more than 10% of CPU on average, it needs further optimisation.
 
-* COMMENT Criterion C
+* Criterion C
 ** UML
 *** batchProcess() function: High-level overview of how the program works
 
@@ -694,7 +694,7 @@ The actual app would run periodically, and it would only download and analyse fi
 - Links,  classifying some HTML files/PDFS as research sources
 - Demonstrate link formatting
 
-* COMMENT Criterion E
+* Criterion E
 ** COMMENT Success Criteria
 See OOWriter file
 ** Testing
@@ -707,13 +707,26 @@ See OOWriter file
 #+DOWNLOADED: file:///home/rohan/Pictures/1612520900.png @ 2021-02-05 14:46:07
 [[file:Criterion_E/2021-02-05_14-46-07_1612520900.png]]
 
-*** Referencing/linking functions TODO
-*** Link replacement/reformatting TODO
+*** COMMENT Referencing/linking functions
+*** Link replacement/reformatting
+Screenshot of a link correctly formatted (within a citation) in a Google Doc:
+#+DOWNLOADED: file:///home/rohan/Pictures/1612518679.png @ 2021-02-13 15:50:19
+[[file:Criterion_E/2021-02-13_15-50-19_1612518679.png]]
+
 ** Client Feedback
+The client generally approved of the app's features, and the way it handles things unobtrusively in the background.
+However, they noted that the app needs more ways of /using/ the information it extracts/processes. For instance, they suggested that I introduce pop-ups and toolbars in the Drive UI that allowed users to see this information up-front (rather than hunting for it in the description)
+They also suggested that the program's usability (for users who are less tech-savvy) is lacking, since there's no external documentation[fn:4], and there were no builtin examples of custom rules.
+
+# # - The UI should be more responsive.
+# - Would help if the app could sort files into folders
+# - Sorting by conference would be helpful
+# - Basically, there need to be better ways of /using/ the information this tool extracts, such as enhancements to the Google Drive UI.
+# - External documentation would make this product more usable (I created a README in response to this suggestion)
+# - The program should come with some built-in custom rules/overrides (for instance, if the document title contains 'Notes' it should be classified as such)
 ** Potential Improvements
 *** Better heuristics based on user feedback
 Since the only samples of MUN documents I had were my own (and those of some of my friends), some of the heuristics I use reflect my own idiosyncracies, or on conventions which might not be universal. With wider usage, I'll be able to determine these failings and correct for them. If there are custom classifications that a lot of users implement, I might include those as defaults within the main program.
-
 *** COMMENT Reliable intelligent auto-formatting
 
 *** Better rewriting/modifying documents
@@ -721,20 +734,17 @@ Modifying documents requires tinkering with a word document, which has an extrem
 
 *** Associate files with specific conferences, and sort them accordingly.
 Currently, files can be associated with committees and topics. However, they can't be associated with specific dates and conferences. Doing so would allow users to 'archive' past documents and focus only on present conferences. It would also give users more
-
 *** COMMENT Auto-open UI
 
-
 *** Performance Improvements
-As it stands, the program takes quite a long time to run, since it needs to download and process a lot of documents. There are a variety of changes which would likely improve performance.
+As it stands, the program takes quite a long time to run, since it needs to download and process a lot of documents. There are a variety of changes which would likely improve performance. Caching document metadata, etc. might improve performance for frequently-changed documents, albeit at the cost of more memory/disk space.
 
 For Google Docs, it's possible to analyse the document without downloading the entire thing, using the Google Docs API. I should introduce functionality which can accomplish that. It would mean that only Word documents would need to be fully downloaded, thus improving the program's performance.
 
-Currently, the program either ignores a document, or downloads it and classifies/modifies it from scratch.
-
 *** Rewrite based on official specs
+The current document parsing functions rely on XML parsing and on existing libraries. It is likely that a program which took into account the existing spec for docx files would be able to modify them while preserving structure and formatting, such as using the spec to identify which elements should be preserved and which should be manipulated.
 
-However, since Microsoft Word is proprietary, it's unknown how much they adhere to the specifications.
+However, since Microsoft Word is proprietary, it's unknown how much they adhere to these open specifications (especially since there's known incompatibility between open tools (LibreOffice Writer) and MS Word.
 
 *** Automatically create shortcuts within the requisite folders
 Google Drive no longer allows files to exist in multiple folders. Instead, they have introduced a shortcut mechanism where we can create multiple links to files within folders. Although this can be done using google's REST API (i.e. commands can be called using formatted https requests) it doesn't expose that functionality through pydrive. Introducing this functionality and integrating it with my code would be extremely helpful.
@@ -834,7 +844,6 @@ So we pass the file object directly. We try it against the namerules, or
 # - Separation accomplished through templates
 # - Abstraction accomplished
 # - Global variables: I only require one.
-# - Input validation TODO
 # - Questions: How many flowcharts for each criterion?
 * COMMENT Feedback <2020-12-08 Tue>
 - No names in final document (Format)
@@ -864,6 +873,14 @@ So we pass the file object directly. We try it against the namerules, or
 # - C should have charts for specific fiddly bits.
 - Consider adding focus on client/objective in crit C
 - Add crit C appendix, acknowledging libraries used
+- In Crit D, include evidence of error handling and the like.
+- In crit D video, add extensibility discussion: Discussion of layers for heuristics, and how multiple heuristics can be composed (such as the custom/builtin heuristics) to create sophisticated filters/analyses.
+* COMMENT TODO <2021-02-13 Sat>
+- Crit D: Add extensibility/layer discussion, and heuristic composition
+- Mention client/objective in crit C (optional)
+- Appendices
+- Test result screenshots
+- GANTT
 
 # - Make sure each criterion is covered by the test plan.
 * COMMENT Consulting
@@ -872,6 +889,8 @@ So we pass the file object directly. We try it against the namerules, or
 - Ask her what she thinks about it
 
 * Footnotes
+
+[fn:4] Based on this feedback, I created a README file distributed with the code.
 
 [fn:7] Pallets, n.d. Template Designer Documentation — Jinja Documentation (2.11.X). [online] Jinja.palletsprojects.com. Available at: <https://jinja.palletsprojects.com/en/2.11.x/templates/> [Accessed 13 January 2021].
 
@@ -892,6 +911,7 @@ So we pass the file object directly. We try it against the namerules, or
 *** Initial Conversation
 *** Discussion of Problems, Finalising Solution
 *** Outlining Requirements
-** Crit B
+** COMMENT Crit B
 ** Crit C
+*** Libraries
 ** Crit E
