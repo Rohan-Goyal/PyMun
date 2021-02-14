@@ -1,0 +1,51 @@
+* Criterion D
+** Script
+(Intro)
+Welcome to my Computer Science IA Criterion D video documentation. My product is a desktop application to help students manage their MUN research resources and documents in google drive, and my client is the supervisor of our school's MUN club.
+First, I'll outline the code structure, and demonstrate what makes the design extensible. We can see that the code is broken into three files: ~gdrive_tools.py, docx_tools.py, and webform.py~.
+~gdrive_tools~ includes utilities for interacting with google drive (and most of the main code), ~docx_tools~ includes functions for parsing and reading docx files (word documents), and ~webform~ includes a Flask object which defines the User Interface, and some utilities to help it interact with the other files.
+Within each file, the code is broken down into separate functions, with some simple objects there as well.
+Additionally, looking at ~gdrive_tools~, I've imported functions from other files, meaning that code can be shared within files easily.
+Looking at ~docx_tools~, I've separated the builtin classifier and the custom classifier which works on custom rules built by the user.
+Most of the individual functions are quite short, and the features come from composing them together. Thus, we can quite easily write new functions to process metadata in new ways, or additional checks and heuristics for parsing/classifying documents.
+The UI is also broken into components. The main UI is here (show UI), but it includes a line to dynamically import this other template, based on the settings in the config file. So depending on how many custom rules the user has created, it can create arbitrarily many elements to show them. Thus, we can tinker with the representation of custom rules without affecting the broader UI - and similarly, we can introduce new configuration options without having to mess with the custom rules.
+
+()
+First, I'll introduce the UI. Running this auto-opens the UI. We can see that you can configure whatever you like. Creating a custom rule so that anything with the word 'position' in it becomes a position paper.
+We can also re- and de-authorise the app easily. De-authorising simply destroys the file containing the client secret (the token needed for the program to access the API)(Demonstrate de- and re-auth).
+Now, we save the settings and close the tab. In the other tab I have the folder with my MUN documents. We can see that this document doesn't have any metadata in the description section.
+
+Now to run the main function. In the actual app, this will run in the background and the function will run regularly every 5 minutes. Here I just run it once for demonstration.
+Once it's done, open up the relevant folder. If we look at the file with 'position' in the name, it's extracted the metadata correctly, showing the country/committee/topic. It's also been classified as a position paper, based on the custom rule.
+Opening up the file itself, we see that the links in the bottom have been replaced with the title and source.
+Going back, we can see that other files have been classified as well, based on the heuristics we defined.
+
+The actual app would run periodically, and it would only download and analyse files with missing metadata each time.
+
+** Extensibility
+- Show that the code is neatly broken into files and functions
+- Show how I import funcs between different files, so that code can be reused in different contexts.
+- Show that the customClassifier is separated from the default classifier
+- Demonstrate how we can apply new functions to the google doc just by adding it to the updatemetadata or batchProcess functions
+- Show how we can define new custom rules as boolean functions.
+- Show that the UI is broken up into bits. So we can easily add in components, or change the styling, without needing to overhaul everything.
+- Overuse the phrase `separation of concerns'.
+** Outline of plan
+- Show custom rules settings
+- Create custom rule
+- Save
+- Run ~main~ via ~, c c~
+- Go to the main Gdrive thing.
+- Open up a normal file, show it's been classified correctly
+- Open up a file named deathray and show it's been classified correctly.
+- Open a file to show the links have been formatted properly
+- Consider showing an (already) formatted resolution.
+- Show re- and de-auth functions
+** Success Criteria
+- NOTE: These are all shown already by the outline below, so just use that.
+- Adds metadata
+- OAuth
+- Classify docs
+- HTML GUI
+- Links,  classifying some HTML files/PDFS as research sources
+- Demonstrate link formatting
