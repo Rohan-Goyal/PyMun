@@ -126,7 +126,6 @@ So we pass the file object directly. We try it against the namerules, or
 - In crit D video, add extensibility discussion: Discussion of layers for heuristics, and how multiple heuristics can be composed (such as the custom/builtin heuristics) to create sophisticated filters/analyses.
 * COMMENT TODO <2021-02-13 Sat>
 - Crit D: Add extensibility/layer discussion, and heuristic composition
-- Mention client/objective in crit C (optional). Update structure screenshots in crit C
 - Appendices
 # - GANTT
 
@@ -142,4 +141,4 @@ Use forms.zip structure
 
 Folder:
 Subfolder docs (including video)
-Subfolder product
+Subfolder product DONE

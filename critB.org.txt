@@ -205,3 +205,4 @@ Call the ~classifier()~ function on 3 different kinds of documents in Google Dri
 - If the computer slows down due to the program running, this means it is insufficiently optimised.
 - Note the time when the program exits
 - Look at the values in perf.data. If the program takes up more than 250MB of RAM or more than 10% of CPU on average, it needs further optimisation.
+  

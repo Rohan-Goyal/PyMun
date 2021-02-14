@@ -21,13 +21,18 @@
 
 ** Code Structure
 I divided my code into 3 files: One which handled the interfacing with google drive, one which handled the manipulation of local Docx files, and one which handled the web GUI.
-*** Webform Structure
-#+DOWNLOADED: file:///home/rohan/Pictures/webform.png @ 2020-11-17 10:38:34
-[[file:Criterion_C/2020-11-17_10-38-34_webform.png]]
 
-*** Google Drive manipulation structure
-#+DOWNLOADED: file:///home/rohan/Pictures/utils.png @ 2020-11-17 10:39:31
-[[file:Criterion_C/2020-11-17_10-39-31_utils.png]]
+*** Google Drive Manipulation
+#+DOWNLOADED: file:///home/rohan/d/cs/ia/gdrive-semantic.png @ 2021-02-14 12:44:34
+[[file:Criterion_C/2021-02-14_12-44-34_gdrive-semantic.png]]
+
+*** Word Document Manipulation
+#+DOWNLOADED: file:///home/rohan/d/cs/ia/docx-semantic.png @ 2021-02-14 12:45:04
+[[file:Criterion_C/2021-02-14_12-45-04_docx-semantic.png]]
+
+*** Webform
+#+DOWNLOADED: file:///home/rohan/d/cs/ia/webform-semantic.png @ 2021-02-14 12:44:50
+[[file:Criterion_C/2021-02-14_12-44-50_webform-semantic.png]]
 
 ** Complex code and explanation
 *** Data structures: Hash tables

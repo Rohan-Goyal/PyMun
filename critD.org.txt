@@ -49,3 +49,5 @@ The actual app would run periodically, and it would only download and analyse fi
 - HTML GUI
 - Links,  classifying some HTML files/PDFS as research sources
 - Demonstrate link formatting
+** <2021-02-14 Sun> Extensibility discussion (layers)
+The tool
