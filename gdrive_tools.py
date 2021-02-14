@@ -29,8 +29,9 @@ def authorisedDrive():
 
     """
     gauth = GoogleAuth()
-    return GoogleDrive(gauth.LocalWebserverAuth(
-    ))  # Creates local webserver and auto handles authentication.
+    return GoogleDrive(
+        gauth.LocalWebserverAuth()
+    )  # Creates local webserver and auto handles authentication.
 
 
 def deAuthorise():
@@ -93,8 +94,7 @@ def getExistingFolder(filename, parentId, drive=mydrive):
     """
     queryParams = {
         # "corpora": "user",
-        "q":
-        f"title='{filename}' and mimeType='application/vnd.google-apps.folder' and '{parentId}' in parents and trashed = False"
+        "q": f"title='{filename}' and mimeType='application/vnd.google-apps.folder' and '{parentId}' in parents and trashed = False"
         # "maxresults": 3,
     }
     files = drive.ListFile(queryParams).GetList()
@@ -222,15 +222,15 @@ def createLink(fileObj, folderObj, drive=mydrive):
     :rtype: DriveFile object
 
     """
-    fileObj["parents"].append({
-        "kind": "drive#parentReference",
-        "id": folderObj["id"],
-        "selfLink":
-        f"https://www.googleapis.com/drive/v2/files/{fileObj['id']}/parents/{folderObj['id']}",
-        "parentLink":
-        f"https://www.googleapis.com/drive/v2/files/{folderObj['id']}",
-        "isRoot": False,
-    })
+    fileObj["parents"].append(
+        {
+            "kind": "drive#parentReference",
+            "id": folderObj["id"],
+            "selfLink": f"https://www.googleapis.com/drive/v2/files/{fileObj['id']}/parents/{folderObj['id']}",
+            "parentLink": f"https://www.googleapis.com/drive/v2/files/{folderObj['id']}",
+            "isRoot": False,
+        }
+    )
     return fileObj
 
 
@@ -252,10 +252,7 @@ def createFolder(name, parentId, drive=mydrive):
         "title": name,
         # The mimetype defines this new file as a folder, so don't change this.
         "mimeType": "application/vnd.google-apps.folder",
-        "parents": [{
-            "kind": "drive#parentReference",
-            "id": parentId
-        }],
+        "parents": [{"kind": "drive#parentReference", "id": parentId}],
     }
     x = getExistingFolder(name, parentId, drive)
     return x if x else drive.CreateFile(folderMeta)
@@ -284,14 +281,14 @@ def mimeToName(mime):
     conversionTable = {
         "application/vnd.google-apps.document": "gdoc",
         "application/pdf": "pdf",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-        "word",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "word",
         "text/html": "html",
         "message/rfc822": "mhtml",
         "application/x-mimearchive": "mhtml",
     }
-    return (conversionTable[mime]
-            if mime in conversionTable.keys() else mime.split("/")[-1])
+    return (
+        conversionTable[mime] if mime in conversionTable.keys() else mime.split("/")[-1]
+    )
 
 
 def classifyFile(fileObj):
@@ -328,8 +325,9 @@ def updateMetadata(fileObj):
     fileObj.SetContentFile(localMeta["path"])
     if filetype in ("gdoc", "word"):
         # Do the docx parsing magic on that doc, convert the return values into metadata.
-        result.update(magicParse(localMeta["path"])
-                      )  # DONE Should get type, agenda, committee, country
+        result.update(
+            magicParse(localMeta["path"])
+        )  # DONE Should get type, agenda, committee, country
         custom = customClassify(localMeta["name"], localMeta["path"])
         if custom:
             result.update({"type": custom})
@@ -361,8 +359,7 @@ def getChild(name, parentId, drive=mydrive):
 
     """
     queryParams = {
-        "q":
-        f"title = '{name}' and '{parentId}' in parents and mimeType = 'application/vnd.google-apps.folder' and trashed=False",
+        "q": f"title = '{name}' and '{parentId}' in parents and mimeType = 'application/vnd.google-apps.folder' and trashed=False",
     }
     files = drive.ListFile(queryParams).GetList()
     return files[0]
@@ -377,8 +374,9 @@ def getMainFolder(path, drive=mydrive):
     :rtype: DriveFile object
 
     """
-    pathElems = (path.split("/") if path.split("/")[0] else path.split("/")[1:]
-                 )  # Ignore the first element, which should be empty
+    pathElems = (
+        path.split("/") if path.split("/")[0] else path.split("/")[1:]
+    )  # Ignore the first element, which should be empty
     child = {"id": "root", "alternateLink": "https://drive.google.com"}
     if not any(pathElems):  # If it doesn't have any non-empty strings
         return child
@@ -387,9 +385,9 @@ def getMainFolder(path, drive=mydrive):
     return child
 
 
-def createTypeFolders(root,
-                      types=("source", "note", "position", "resolution",
-                             "unclassified")):
+def createTypeFolders(
+    root, types=("source", "note", "position", "resolution", "unclassified")
+):
     """Creates the folders to store/sort different kinds of documents
 
     :param root: The ID of the folder in which these new folders should be created
@@ -415,8 +413,7 @@ def listFiles(root, drive=mydrive):
 
     """
     queryParams = {
-        "q":
-        f"'{root['id']}' in parents and mimeType != 'application/vnd.google-apps.folder' and trashed=False",
+        "q": f"'{root['id']}' in parents and mimeType != 'application/vnd.google-apps.folder' and trashed=False",
     }
     files = drive.ListFile(queryParams).GetList()
     return files
@@ -499,8 +496,8 @@ def main():
     Timer(seconds, main).start()
 
 
-# if __name__ == "__main__":
-#    main()
+if __name__ == "__main__":
+    main()
 # batchProcess()
 """
 DONE mainFolder is a slight issue, all the rest are manageable
@@ -512,8 +509,3 @@ File metadata is unlikely to change over time. So when we run 'batchprocess', we
 a) no metadata
 b) missing metadata (i.e if the doctype is not clarified. The other stuff is tricky to get)
 """
-
-x=getFile('Position Paper')
-y=addMetadata(x,{'type':'position paper'})
-y.Upload()
-print(getMetadata(y))

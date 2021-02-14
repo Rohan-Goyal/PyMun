@@ -28,8 +28,7 @@ def asArr(filename):
 
 
 def toPath(
-    fileID,
-    app=appname
+    fileID, app=appname
 ):  # Given a google drive ID as a string, it returns the "odt" file from which to read, or to which it should be written.
     return f"{path.expanduser('~')}/tmp/{app}/{fileID}.odt"
 
@@ -77,7 +76,8 @@ def listElems(docBody):
     """
     # Any element where the first char after indentation is a number, the first two chars are bracketed letter, or a bracketed roman numeral.
     return [
-        line for line in docBody
+        line
+        for line in docBody
         if line.strip() and (line[1] == ")" or hasSmallRoman(line))
     ]  # TODO: Consider numbers
 
@@ -92,8 +92,7 @@ def isResolution(docArr, threshold=0.5):
 
     """
     # If a document is more than threshold % list, it's a resolution. For now, its 0.5 ie 50%
-    return bool(
-        len(listElems(docArr)) >= floor(threshold * len(getBody(docArr))))
+    return bool(len(listElems(docArr)) >= floor(threshold * len(getBody(docArr))))
 
 
 def hasSmallRoman(string):
@@ -210,10 +209,9 @@ def cleanString(string, keyword):
 
     """
     # Specifically, cleans a string of the form "Key:value or thereabouts"
-    x=(string.replace(":", "").replace("-",
-                                            "").replace(keyword,
-                                                        "").lstrip().rstrip())
-    return x if len(x)<=75 else x[0:74]+"..."
+    x = string.replace(":", "").replace("-", "").replace(keyword, "").lstrip().rstrip()
+    return x if len(x) <= 75 else x[0:74] + "..."
+
 
 def extractMetadata(docArr):
     """Search through the document array, and attempt to discover document metadata such as the agenda, committee, country.
@@ -291,7 +289,7 @@ def docType(docxFile):
     docArr = getBody(asArr(docxFile))
     maxdepth = maxIndent(docArr)  # NOTE: Unreliable
     if maxdepth >= 2 or bool(
-            len(listElems(docArr)) >= floor(0.5 * len(docArr))  # Reliable
+        len(listElems(docArr)) >= floor(0.5 * len(docArr))  # Reliable
     ):  # More than 50% list
         return "resolution"
     for i in docArr:
@@ -321,12 +319,15 @@ def magicParse(path):
     """
     documentType = docType(path)
     metadata = extractMetadata(getBody(asArr(path)))
-    return ({
-        "committee": getCommittee(path),
-        **metadata, "type": documentType,
-    } if documentType == "resolution" and getCommittee(path) else {
-        **metadata, "type": documentType
-    })
+    return (
+        {
+            "committee": getCommittee(path),
+            **metadata,
+            "type": documentType,
+        }
+        if documentType == "resolution" and getCommittee(path)
+        else {**metadata, "type": documentType}
+    )
 
 
 def customClassify(title, localPath):
@@ -368,12 +369,12 @@ def getHtmlData(html):
     metas = soup.find_all("meta")
     metadata = {}
     relevant = [
-        m for m in metas
-        if "property" in m.attrs and "og" in m.attrs["property"]
+        m for m in metas if "property" in m.attrs and "og" in m.attrs["property"]
     ]
     for meta in relevant:
         metadata.update(
-            {meta.attrs["property"].replace("og:", ""): meta.attrs["content"]})
+            {meta.attrs["property"].replace("og:", ""): meta.attrs["content"]}
+        )
     return {"web_title": title, **metadata}
 
 
@@ -390,8 +391,8 @@ def getLinkData(url):
     except:
         response = False
     source = urlparse(url).netloc.replace(
-        "www.",
-        "")  # Consider replacing the last bit of the domain name (.org, etc)
+        "www.", ""
+    )  # Consider replacing the last bit of the domain name (.org, etc)
     if response:
         return {**getHtmlData(response.content), "source": source}
     else:
@@ -419,9 +420,7 @@ def linkDict(txt):
     conversionTable = {}
     for link in allLinks:
         meta = getLinkData(link)
-        string = (
-            f"\"{meta['web_title']} ({meta['source']}) [{link}]\""  # consider replacing webtitle
-        )
+        string = f"\"{meta['web_title']} ({meta['source']}) [{link}]\""  # consider replacing webtitle
         conversionTable.update({link: string})
     return conversionTable
 
@@ -466,8 +465,11 @@ def getDocumentFile(folderPath):
     :rtype: String (path)
 
     """
-    return (f"{folderPath}word/document.xml" if str(folderPath)[-1] == "/" else
-            f"{folderPath}/word/document.xml")
+    return (
+        f"{folderPath}word/document.xml"
+        if str(folderPath)[-1] == "/"
+        else f"{folderPath}/word/document.xml"
+    )
 
 
 def replaceLinksXml(filePath):
@@ -554,8 +556,8 @@ class Tree:
             #        yield j.flatten()
 
     def flattenGenerators(
-            self,
-            flat):  # The flatten function leaves nested lists as generators
+        self, flat
+    ):  # The flatten function leaves nested lists as generators
         for i, v in enumerate(flat):
             if isinstance(v, GeneratorType):
                 flat[i] = self.flattenGenerators(list(v))
@@ -584,7 +586,8 @@ class Clause(Tree):
 
     @staticmethod
     def fromFormattedDocArr(
-        docArr, ):  # For now. Assumes everything is perfectly formatted
+        docArr,
+    ):  # For now. Assumes everything is perfectly formatted
         body = getBody(docArr)
         docstart = Tree("Document Start")
         toplevel = listElems(body)
@@ -593,21 +596,20 @@ class Clause(Tree):
         ]  # In theory, just the preamble stuff. In practice, a lot more.
 
         indices, clauses = Clause.filter_clauses(
-            clauses, lambda i: i[0] in "123456789" and i[1] in ").")
+            clauses, lambda i: i[0] in "123456789" and i[1] in ")."
+        )
         for index, root in enumerate(clauses):
             # Everything between the current toplevel and the next toplevel
-            children = toplevel[indices[index]:indices[
-                index +
-                1]]  # So between the first and second clauses, or between the second and third,or whatever
+            children = toplevel[
+                indices[index] : indices[index + 1]
+            ]  # So between the first and second clauses, or between the second and third,or whatever
             subindices, subclauses = Clause.filter_clauses(
                 children,
-                lambda i: i[0] == "(" and i[2] == ")" and i[1] in
-                ascii_lowercase,
+                lambda i: i[0] == "(" and i[2] == ")" and i[1] in ascii_lowercase,
             )
 
             for subindex, subroot in enumerate(subclauses):
-                subchildren = children[subindices[subindex]:subindices[subindex
-                                                                       + 1]]
+                subchildren = children[subindices[subindex] : subindices[subindex + 1]]
                 subsubindices, subsubclauses = Clause.filter_clauses(
                     subchildren, hasSmallRoman
                 )  # NOTE: Since MUN only allows up to sub-sub-sub-clauses, we're probably fine without a filter and just taking everything. But keep this, partly to test if it works and partly because... reasons.
@@ -649,6 +651,7 @@ class Clause(Tree):
             i.format()
             # Calls itself recursively. Stops when there are no children left, which is perfect
 
+
 # TODO: Write a tree to a word doc somehow.
 
 # NOTE: Should consider using the 1) a) i) system to find lists, as well as simply indentation. Perhaps combine both and come up with a nice heuristic.
@@ -656,8 +659,3 @@ class Clause(Tree):
 
 """Get the document as a tree structure: So headings, subheadings, lists, sublists"""
 # TODO: Clause objects, autoformatting
-
-print(getLinkData("https://www.un.org/securitycouncil/content/resolutions-0"))
-
-fname="/home/rohan/tmp/IOC_Extract.docx"
-replaceLinks(fname)

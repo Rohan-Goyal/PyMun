@@ -7,8 +7,13 @@ from webbrowser import open as browse
 from flask import Flask, flash, redirect, render_template, request
 from flask_wtf import FlaskForm
 from werkzeug.datastructures import ImmutableMultiDict, MultiDict
-from wtforms import (BooleanField, SelectField, SubmitField,  # StringField,
-                     TextField, validators)
+from wtforms import (
+    BooleanField,
+    SelectField,
+    SubmitField,  # StringField,
+    TextField,
+    validators,
+)
 
 from gdrive_tools import authorisedDrive, deAuthorise, getMainFolder
 
@@ -85,12 +90,13 @@ class ConfigForm(FlaskForm):
 
     @app.context_processor
     def utility_processor():
-        """ A set of processors that expose certain values to the Jinja2 template, so they can be used in the form more easily.
+        """A set of processors that expose certain values to the Jinja2 template, so they can be used in the form more easily.
 
         :returns: A dictionary, with functions as values.
         :rtype: Dict
 
         """
+
         def currentJson():
             return load(open("./config.json"))
 
