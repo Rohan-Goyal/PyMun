@@ -1,0 +1,62 @@
+* Criterion A
+** Defining the Problem
+My client is the supervisor of the school's MUN (Model United Nations) club. With their advice and supervision, I intend to develop a software solution which makes preparation for MUN easier for participating students (See appendix A-1 for discussion).
+
+Presently, students preparing for MUN conferences face a variety of inconveniences when managing documents for various conferences. Without a tedious method of manually filing documents, links, resources, etc. it is easy to lose track of which documents correspond to which committee/agenda. It is also easy to lose track of resources and research - since research is often a mix of PDF files and links, searching for information across sources is hardly straightforward. Being able to index links and PDFs like this would make it a lot easier to write papers without getting lost in thousands of tabs.
+
+I intend to create a system which, based on some user configuration, is automatically able to track and manage information in a way optimised for MUN participants. This includes being able to parse (and ideally process) semantic units such clauses, subclauses, paragraphs, conclusions, etc. Based on these, it will provide functions to search and sort documents. This system will classify documents based on their purpose/type (such as a script for a speech, a position paper, notes, etc.), and based on the committee and agenda they relate to, allowing students to more easily focus on one specific agenda/conference at a time.
+
+*Word Count:240*
+** COMMENT Crud
+python application (with a minimal web GUI, and also a CLI so that I can actually use it) which, based on some simple initial configurations, is able to automatically create and analyse metadata for certain files, sort them into folders (including using links to show them in multiple folders). The solution will interface with the user's Google Drive using the PyDrive library/API, and manage documents that way.
+As a member of the MUN club myself, I've faced these problems and in my experience they aren't exactly
+- Managing documents which have different kinds, different committees, and different agendas.
+- Dealing with structural requirements, formatting, etc.
+NOTE: This would be perfect with emacs yasnippet+swoop+org, but NO. Apparently most of the world is too dumb to use an editor from the 60s written in LISP.
+(I personally use linux, and can run python scripts without all that bother. But alas, other people use things not designed to be scripted and so I must use Drive APIs and PyInstaller).
+
+** Solution and Rationale
+My decision is to create a Python application with a minimal web GUI that manages the user's Google Drive files. Based on the user's configuration, it will run in the background and "watch" their Google drive, making the requisite changes. Something like this requires the ability to auto-start and run in the background on the user's machine, and so it has to use a native program rather than a web app or electron monstrosity.
+
+Students have different workflows for managing documents, so the program must have a configuration UI for users, ideally one they're familiar with. Thus, the configuration UI will be based on a webform.
+It will be necessary to use a language that compiles for all systems, since the target audience uses a mixture of Linux, MacOS and Windows devices (See appendix A-2).
+The aim of this program is to automate file management for users. Thus, it needs to run in the background since forcing users to run it manually defeats the purpose.
+
+I chose Python because it has a lot of simple libraries and APIs that can interface with google services. Specifically, google provides a set of APIs for dealing with docs, and third parties also provide more convenient wrappers such as PyDrive. Since much of the data will deal with semantic markup and document metadata, it will be represented internally using XML or JSON flat files. Python has excellent support for both of those, including converting them to and from native data structures.
+# Furthermore, I have worked with python on previous projects in the past and so using something which I'm familiar with should save on development time and minimise errors.
+*Word Count: 249*
+** Success Criteria
+*** COMMENT Crud
+- Able to use links/references to place files in multiple folders based on metadata
+- Has internal representation of folder hierarchies, files as objects, etc. (more design principle than criterion)
+- Process documents, and interpret them as data structures (whether through markup language or trees) which enable better parsing and formatting of documents
+- Has ability to handle ambiguity or poorly-formatted documents.
+- Presumably does this through parsing ambiguous sections as something like annotations, and parsing the rest.
+- Extracted links should automatically include title, metadata
+- GDrive GUI option to archive a particular conference folder: Adds the "archive" tag/metadata to all assoc'd files
+- [IDEA: Check browser tabs to see if file is open before edits. Use brotab]
+
+*** General
+1. Able to parse a Google docs document and add custom metadata tags.
+2. Uses OAuth to access google drive, and stores client secrets securely.
+3. Tags/metadata includes the document type (position paper, research, notes, clause/resolution drafts), committee, country, agenda.
+4. Auto-formats clauses, managing indentation, lists, sublists, etc.
+5. Configured using an HTML GUI (run offline/locally) which could be operated by a child of five
+6. Able to recognise/classify research resources, including recognising links within documents
+7. Integrates with existing document management systems (Zotero, Onedrive, Google Drive, etc.)
+8. Program should run in the background periodically
+*** Functionality
+9. [@9] Attach custom tags to documents
+10. Put links in folders accordingly
+11. For clause/resolution docs, auto-format the commas, semi-colons, sublists, etc.
+12. Replace naked links (when it's just http://, no fancy link text) in documents with a markdown-style syntax that includes the link's title and source
+
+*** Configurability
+13. [@13] Users define how frequently they want the program to run
+14. Users can decide whether or not the program should auto-format documents
+15. User can tell the program to look in a specific folder or sub-folder in their google drive, using Unix path syntax (such as "/Documents/MUN")
+16. Users must be able to easily re-authorise and de-authorise the program (for privacy/security reasons)
+17. Users should be able to specify custom rules, for classifying documents, based on the following criteria:
+    - Contains <phrase>
+    - Name=<phrase>
+  # - Age=<number of days> (Age will be computed) based on the files last-modified date and the current date. All calculations will be done in *.

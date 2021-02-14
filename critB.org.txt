@@ -1,0 +1,207 @@
+* Criterion B
+** COMMENT Record of Tasks
+See excel
+** Structure Diagram: Overview of program working
+#+DOWNLOADED: file:///home/rohan/Downloads/code2flow_VnMcbg.svg @ 2021-02-02 20:38:03
+[[file:Criterion_B/2021-02-02_20-38-03_code2flow_VnMcbg.svg]]
+*** COMMENT Rough drafting
+A user workflow basically looks like:
+- Configure the program
+- Launch the script (or have it launch automatically on startup)
+- Wait
+- Open up google drive
+- Use the features provided () to navigate through google drive more effectively.
+
+Program internal workflow looks like:
+- Scan files
+- Download necessary files
+- Parse the heck out of them
+- Modify documents
+- Reupload documents with all that stuff.
+- Wait
+- Do so again
+** Flowcharts
+*** File Process function
+#+DOWNLOADED: file:///home/rohan/Downloads/code2flow_7VJvnF.svg @ 2021-02-03 13:11:05
+[[file:Criterion_B/2021-02-03_13-11-05_code2flow_7VJvnF.svg]]
+*** Process of getting link metadata
+#+DOWNLOADED: file:///home/rohan/Downloads/code2flow_BVudc9.svg @ 2020-09-16 12:34:06
+[[file:Criterion_B/2020-09-16_12-34-06_code2flow_BVudc9.svg]]
+*** Iterate over the lines in a file, replacing links with a format including the metadata
+#+DOWNLOADED: file:///home/rohan/Downloads/code2flow_UwsW7j%20(1).svg @ 2020-09-16 12:33:41
+[[file:Criterion_B/2020-09-16_12-33-41_code2flow_UwsW7j%20(1).svg]]
+*** Extract document metadata
+
+#+DOWNLOADED: file:///home/rohan/Downloads/code2flow_sPfF6L.svg @ 2021-02-02 19:35:54
+[[file:Criterion_B/2021-02-02_19-35-54_code2flow_sPfF6L.svg]]
+
+*** Batch Process: Wrapper function that calls all other subroutines in sequence
+#+DOWNLOADED: file:///home/rohan/Downloads/code2flow_BaieTB.svg @ 2020-11-15 17:30:01
+[[file:Criterion_B/2020-11-15_17-30-01_code2flow_BaieTB.svg]]
+
+** Designs
+*** UI: General Settings
+#+DOWNLOADED: file:///home/rohan/Pictures/1609309565.png @ 2020-12-30 10:27:07
+[[file:Criterion_B/2020-12-30_10-27-07_1609309565.png]]
+(Created using Bootstrap Studio, a free mockup tool. A crude mockup of how the 'general settings' component of the settings view might look.)
+*** UI: Custom Rules
+#+DOWNLOADED: file:///home/rohan/Pictures/1612095523.png @ 2021-01-31 16:19:38
+[[file:Criterion_B/2021-01-31_16-19-38_1612095523.png]]
+
+*** Config options
+- Run every {n} minutes
+- Auto-format docs: y/n
+- Root path
+# NOTE: They fill in a path, which we convert to a drive folder_object. The program parses '/' as the top level and descends from there
+- Authorise and de-authorise buttons: Authorise calls the 'webserverauth()' method, allowing the user to re-authorise the app
+- Link to take you to the folder in Gdrive
+- A section for custom rules
+
+*** Config internal representation (JSON file)
+#+BEGIN_SRC json
+{"delay":5,
+ "autoformat":true,
+ "root":"/mun",
+ "folder-link":"This will be generated based on folder-ids and the root path",
+ "custom-rules":
+    {"name": [{"regex":"[Pp]osition [Pp]aper","type":"position paper"}],
+    "contains":[{"regex":"Urges","type":"resolution"}]}
+}
+#+END_SRC
+
+*** Metadata format
+#+BEGIN_SRC python
+metadata = {
+    "type": ("source", "notes", "position paper", "resolution"),
+    "agenda": "string",
+    "committee": "string",
+    "country": "string",
+    "filetype": ("[m]html", "pdf", "docx", "googledoc", "md", "org", "misc"),
+}
+#+END_SRC
+
+*** Heuristics for defining document type
+#+BEGIN_SRC python
+if mime in ("HTML", "MHTML", "PDF"):
+    return "source"
+
+if mime in ("docx", "google docx", "md"):
+
+    if document.matches("\w* https://\w*/ \w*"): # A link surrounded by words. Common in notes, not in papers
+        return "notes"
+
+    doctree=Tree(document) # # Trees based on paragraphs, lists, linebreaks, etc.
+    lists=[(l, l.depth()) for l in document.lists] #Depth is how far it is nested
+    if max(lists, key=lambda elem:elem[0])>=2: # Depth 0 means shallow. Searches for the highest depth in the document, i.e the most nested lists we have.
+        return "resolution"
+#+END_SRC
+
+*** Clause data structure
+An MUN clause is basically a statement, which can have an arbitrary number of subclauses, each of which can have an arbitrary number of sub-subclauses, etc.
+
+Thus, the ideal data structure for representing an MUN resolution (a collection of clauses) is using a structure based on a tree. Each clause will have a root, which is the text of the clause as a string. It will also have children, which themselves are clauses with roots and children: The bottom-level, or end of a clause, is when all of it's children have no children of their own and the tree terminates.
+# NOTE: For this, consider replacing with pseudocode
+# TODO: Add flowcharts for some, in place (or alongside pseudocode)
+#+BEGIN_SRC python
+class Tree:
+    def __init__(rootstring):
+        self.root=rootstring
+        self.children=[]
+
+    def addChild(self, child):
+        self.children.append(Tree(child))
+        pass
+
+    def getChild(self, n):
+        return self.children[n]
+
+    def getNestedChild(self,*args):
+        if len(args)==1:
+            return self.getChild(self, args[0])
+        else:
+            return self.getNestedChild(self,args[1:])
+#+END_SRC
+
+*** Sample directory structure
+- /
+  - MUN
+    - Agenda: Combating digital terrorism
+    - Agenda: Tourism after COVID-19
+    - Position Papers
+    - Resolutions
+    - Notes
+    - Resources
+    - Recent
+    - {All documents}
+
+** Testing
+*** COMMENT Preliminaries (setup)
+- Create a throwaway Google account
+- Copy my various MUN documents/notes from my main Drive to the new Drive
+- Authorise my program to use this account
+
+*** Unit tests
+**** Drive retrieval/metadata manipulation functions (Success Criteria 2,7,9)
+ Call the following code (It finds a file, reads the content, adds metadata, and reads that new metadata:
+ #+BEGIN_SRC python
+x=getFile('Position Paper')
+y=addMetadata(x,{'type':'position paper'})
+y.Upload()
+print(getMetadata(y))
+ #+END_SRC
+It should run without error and print {type:position paper}
+
+**** Link metadata functions (Success Criteria 6,12)
+#+BEGIN_SRC  python
+print(getLinkData("https://www.un.org/securitycouncil/content/resolutions-0"))
+#+END_SRC
+It should correctly retrieve the webpage title, and the source website.
+**** Auto-formatting functions on a local document (Success Criteria 4,11)
+- Create a local Word/Docx file with intentional formatting errors (based on tinkering with an old MUN document a friend of mine created).
+- Pass it through the auto-formatter. Inspect the output- this must be done by eye.
+
+**** Referencing/linking functions (Success Criteria 10)
+#+BEGIN_SRC python
+folder=createFolder('mun-unit-test')
+folder.Upload()
+paper=getFile('mun-paper')
+link=createLink(paper,folder)
+link.Upload()
+#+END_SRC
+On visiting the folder in the Drive web interface, there should be a folder mun-unit-test with a file mun-paper in it.
+# Ran without error, but the file was not copied
+**** Link replacer functions (Success Criteria 6,12)
+#+BEGIN_SRC python
+fname="/home/{user}/tmp/IOC_Extract.docx"
+replaceLinks(fname)
+#+END_SRC
+This should replace all the links in the given file with a string that includes metadata, and write that new file to the file ~{fname}-links_replaced.docx~. Then inspect that file to ensure link replacement went properly.
+
+*** Integration tests
+**** Metadata tagging functions (Sucess Criteria 1,2,3,6,7,9,10)
+Call the ~classifier()~ function on 3 different kinds of documents in Google Drive, inspect the output to make sure it aligns with my expectations
+
+**** Document parsing/interpretation suite (Success Criteria 4,11)
+- Create a Google doc with 3 top-level clauses, each with a certain number of sub- and sub-sub-clauses.
+- Load that document.
+- Call the parse function on the loaded document, and save the result into a variable
+- Print the first full clause of the variable.
+- Print the second subclause of the second clause, top-level only.
+
+**** UI (Sucess Criteria 5, 13-17)
+- Execute the file webform.py, and navigate to http://127.0.0.1:5000.
+- The web UI should be a form with buttons and text fields, structured in line with the design.
+- Write some values in the fields, and press 'Save Settings'.
+- Check the file config.json: The file should reflect the typed values.
+- Click the 'view folder' link. It should go to the proper folder.
+
+*** COMMENT Performance/stress-testing
+- Upload a large amount of MUN files (specifically, all of my notes and research for a particular conference) to a particular folder in Google Drive
+- Point the program to that folder using the configuration.
+- Run the program with the following prefix ~perf-record~. This profiles the memory, cpu, used by the program and writes it to the file perf.data
+# Consider using  ~systemd-run --scope -p MemoryMax=300M CPUQuota=200%~
+- Note the start time
+- Continue using my computer to do whatever I want
+- If the computer slows down due to the program running, this means it is insufficiently optimised.
+- Note the time when the program exits
+- Look at the values in perf.data. If the program takes up more than 250MB of RAM or more than 10% of CPU on average, it needs further optimisation.

@@ -1,0 +1,21 @@
+* Appendices
+** Crit A
+*** Initial Conversation
+**** Problems Faced
+-
+*** Discussion of Problems, Finalising Solution
+- Students: Sorting and keeping track of different documents (in a way more sophisticated than normal file management, and which is cognizant of existing MUN stuff)
+- Formatting documents and keeping track of conventions
+- Bibliography management (although there are existing tools for this, just under-utilised)
+- Solution: Google drive `add-on' that can automatically identify documents, and format them in a way that respects conventions.
+*** Outlining Requirements
+- Usability
+- Google Drive integration, since that's something commonly used
+- Sorting
+- Managing research resources/references, either within documents or externally
+- Automated and unobtrusive, as far as possible
+- Configurable, and adaptable to different styles and workflows
+** COMMENT Crit B
+** Crit C
+*** Libraries
+** Crit E

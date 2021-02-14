@@ -1,0 +1,385 @@
+* Criterion C
+** UML
+*** batchProcess() function: High-level overview of how the program works
+
+#+DOWNLOADED: file:///home/rohan/Downloads/code2flow_QL3FIE.svg @ 2021-01-12 12:20:05
+[[file:Criterion_C/2021-01-12_12-20-05_code2flow_QL3FIE.svg]]
+
+*** getMainFolder() function: Given a file path, retrieve the Google Drive File resource at that path
+
+#+DOWNLOADED: file:///home/rohan/Downloads/mainfolder.svg @ 2020-10-11 17:00:35
+[[file:Criterion_C/2020-10-11_17-00-35_mainfolder.svg]]
+
+*** Document Classification Heuristic (Slightly simplified for brevity)
+
+#+DOWNLOADED: file:///home/rohan/Downloads/classify.svg @ 2020-10-11 17:00:28
+[[file:Criterion_C/2020-10-11_17-00-28_classify.svg]]
+
+*** Tree and Clause objects
+#+DOWNLOADED: file:///home/rohan/d/cs/ia/tree.svg @ 2020-10-11 17:02:12
+[[file:Criterion_C/2020-10-11_17-02-12_tree.svg]]
+
+** Code Structure
+I divided my code into 3 files: One which handled the interfacing with google drive, one which handled the manipulation of local Docx files, and one which handled the web GUI.
+*** Webform Structure
+#+DOWNLOADED: file:///home/rohan/Pictures/webform.png @ 2020-11-17 10:38:34
+[[file:Criterion_C/2020-11-17_10-38-34_webform.png]]
+
+*** Google Drive manipulation structure
+#+DOWNLOADED: file:///home/rohan/Pictures/utils.png @ 2020-11-17 10:39:31
+[[file:Criterion_C/2020-11-17_10-39-31_utils.png]]
+
+** Complex code and explanation
+*** Data structures: Hash tables
+My program makes extensive use of dictionaries (key-value stores). The metadata added to documents is represented as a structured hashtable. This allows them to be serialised to plaintext more easily, making it easier to send the data to the Drive API.
+#+BEGIN_SRC python
+  def createFolder(name, parent_id, drive=mydrive):
+      folder_metadata = {
+          "title": name,
+          # The mimetype defines this new file as a folder, so don't change this.
+          "mimeType": "application/vnd.google-apps.folder",
+          "parents": [{"kind": "drive#parentReference", "id": parent_id}],
+      }
+      return drive.CreateFile(folder_metadata)
+#+END_SRC
+
+I also use hashtables to store associations. I use a hashtable to associate MIME types with informal names, such as associating ~application/vnd.openxmlformats-officedocument.wordprocessingml.document~ with ~"word"~. This lets me refer to the informal name in my program - if the mimetype changes or I wish to add new ones, I need only tinker with the conversion table rather than rewrite any logic.
+
+#+BEGIN_SRC python
+  conversion_table = {
+      "application/vnd.google-apps.document": "gdoc",
+      "application/pdf": "pdf",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "word",
+      "text/html": "html",
+      "message/rfc822": "mhtml",
+      "application/x-mimearchive": "mhtml",
+  }
+#+END_SRC
+
+*** File/Data: JSON
+Students have different workflows for how they manage documents, so the program must be configurable. I introduced options that modify the programs behaviour. For instance, the user decides where to store documents, and the program automatically finds that folder in Google Drive.
+
+User data must be persistent, and so I store it as JSON, in a file named ~"config.json"~ (The structure of which is defined in criterion B). JSON provides a convenient way to store configuration keys/values.
+#+BEGIN_SRC python
+config = json.load("./config.json")
+folderpath = config["root"]
+if "folder-link" not in config:
+    folderlink = getMainFolder(folderpath)["alternateLink"]
+    config["folder-link"] = folderlink
+    json.dump(config, "./config.json")
+# Snippet reads the json file, gets the path of the folder, and converts it to a link to the relevant Google Drive folder.
+# getMainFolder() is defined elsewhere in the code.
+#+END_SRC
+
+*** GUI: HTML
+Although Python is system-agnostic, since people don't have python pre-installed on their systems it needs to be compiled for specific OS's.
+
+Since compiling python with GUI libraries is difficult, I use an HTML+JS form as my GUI. My program runs as a webserver on the user's local computer, and serves an HTML page. When users save settings, the program parses the response, saving it to JSON. The users are presented with a familiar interface, and they don't need libraries to access it, making the program more usable.
+
+To make the GUI palatable, I used the bootstrap framework, which provides configurable CSS:[fn:1]
+
+
+#+DOWNLOADED: file:///home/rohan/Pictures/1603364009.png @ 2020-10-22 14:53:43
+[[file:Criterion_C/2020-10-22_14-53-43_1603364009.png]]
+
+*** Data structures: Trees
+MUN Clauses can be arbitrarily nested- clauses have subclauses, which have sub-subclauses, and so on. Representing this requires a fundamentally recursive data structure. I chose a tree, since structured documents (like markdown files) are parsed as trees. My tree structure uses a list to represent its children (any node can have arbitrarily many children).[fn:2]
+
+#+BEGIN_SRC python
+class Tree:
+    # Attributes: A list of children, all of whom are either trees or empty.
+    def __init__(self, rootstring, parent=None):
+        self.root = rootstring
+        self.children = []
+        self.parent = parent
+
+    def __str__(self):
+        return self.root
+
+    def addChild(self, child):
+        self.children.append(Tree(child, self))
+#+END_SRC
+
+*** Recursion on Trees
+I defined an algorithm ~maxDepth~ that finds the height of a tree. This can determine the level of clause nesting in a resolution, and thus identify whether a document is a resolution or not. It's also vital for understanding the structure of a document when auto-formatting.
+
+I designed an algorithm ~getNestedChild~, which identifies elements in a tree by their "coordinates". To get the first child of the first child of the root node, you would call ~getNestedChild(0,0)~. The algorithm recursively descends the tree, and with each level it descends it slices off the first argument (i.e coordinate), navigating the tree with minimal overhead.[fn:3]
+#+BEGIN_SRC python
+    def maxDepth(self):
+        if self.children:
+            depths = [i.maxDepth() for i in self.children]
+            return max(depths) + 1
+        else:
+            return 0
+        # Tree with only one node (no children) registers as depth 0.
+
+    def getChild(self, n):
+        return self.children[n]
+
+    def getNestedChild(self, *args):
+        if len(args) == 1:
+            return self.getChild(args[0])
+        else:
+            return self.getChild(args[0]).getNestedChild(*args[1:])
+#+END_SRC
+
+*** Tree objects and inheritance
+In addition to the basic Tree object, I defined a subclass ~Clause~. This inherits methods like ~__init__~ and ~maxdepth~ from ~Tree~, but includes new methods like ~fromDocArr~, allowing us to construct a specialised tree from a word document. It also includes methods like ~~format~~.
+#+BEGIN_SRC python
+class Clause(Tree):
+
+    #    @staticmethod
+    def fromDocArr(docArr):
+        root = Tree("Document Start")
+        toplevels = "Everything without a tab in front"
+        indices = "That but indices"
+        toplevels = [Tree(i) for i in toplevels]
+        # Omitted for brevity
+
+    def appendOrReplace(target, replacer):
+        # Check if the last char is punctuation. If so, replace it with replacer. Otherwise, append replacer to target.
+        last = target[-1]
+        if last in "!&*-;:,.?":
+            target[-1] = replacer
+            return target
+        else:
+            return target + replacer
+
+    def format(self):
+        # Regardless of nesting level, we basically have a semicolon at the end of every sub* clause except the last one, which has a.
+        # So for every clause, I'd suggest children[-1] have a fullstop added. For the rest, if they have children, append a ":", else append a ";"
+        # If the last char is a punctuation mark, replace it, otherwise append.
+        body = self.root
+        if self.children:
+            self.appendOrReplace(":")
+        else:
+            self.appendOrReplace(";")
+#+END_SRC
+*** Libraries
+My solution interfaces with external libraries and APIs. For instance, it uses ~pydrive2~ to interface with Google Drive, such as to retrieve documents and manipulate metadata.
+
+It also uses ~python-docx~ to parse word documents. Specifically, it uses ~docx2python~ to convert a document into a structured array based on its XML representation. Using optimized libraries like this improves performance, and means fewer bugs - I don't have to exhaustively study the Word document specification, which simplifies the code.
+
+I also use elements from the standard library to handle JSON serialisation, file management, network requests, etc. Since the standard library is precompiled C, it's more performant than my own implementations.
+
+#+BEGIN_SRC python
+from pydrive2.auth import GoogleAuth
+from pydrive2.drive import GoogleDrive
+from urllib.parse import urlparse
+from bs4 import BeautifulSoup
+#+END_SRC
+
+#+BEGIN_SRC python
+import docx
+from docx2txt import process as asTxt
+from os import path
+from docx2python import docx2python as asArr
+from pprint import pprint
+from re import findall
+#+END_SRC
+
+*** Quasi-functional programming: Optimising Network Calls
+In testing the program, I discovered calls to ~Upload()~ and ~Download()~ from the Google Drive API were by far the most expensive components of my programming. I borrowed some ideas from functional programming - Instead of uploading the file with each function, the function accepts a DriveFile object (defined in the Pydrive2 library) and returns a modified version of it. Thus, I can chain multiple such functions together and simply upload the last returned object with all the changes made, which greatly increases the programs performance.
+
+#+BEGIN_SRC python
+# An example of quasi-functional code
+def createFolder(name, parentId, drive=mydrive):
+    """Creates and returns a drive folder within the path specified by parentId, and with the given name. If one exists already, return that instead
+
+    :param name: The name of the folder
+    :param parentId: The Id of the folder in which the new folder should be created
+    :param drive: The GoogleDrive object representing a drive to modify
+    :returns: An existing folder, if one is found, else a new one with the specified name and parent
+    :rtype: DriveFile object
+
+    """
+    folderMeta = {
+        "title": name,
+        # The mimetype defines this new file as a folder, so don't change this.
+        "mimeType": "application/vnd.google-apps.folder",
+        "parents": [{"kind": "drive#parentReference", "id": parentId}],
+    }
+    x = getExistingFolder(name, parentId, drive)
+    return x if x else drive.CreateFile(folderMeta)
+# If a folder with that name already exists at that path, just return that instead of creating a new on# If a folder with that name already exists at that path, just return that instead of creating a new onee
+#+END_SRC
+
+*** Advanced Data Structures: Navigating nested arrays
+To extract metadata from documents, I had to traverse an arbitrarily-nested array. To handle this neatly, I defined a recursive ~flatten~ function. Since it deals exclusively with lists and tuples, it uses the python construct ~yield~ instead of return. Thus, it returns individual elements, which automatically accumulate into an iterable.[fn:5].
+#+BEGIN_SRC python
+def flatten(iterable):  # WARNING: Does not work on dicts
+    it = iter(iterable)
+    for e in it:
+        if isinstance(e, (list, tuple)):
+            for f in flatten(e):
+                yield f
+        else:
+            yield e
+# Recursively expands everything until it stops being a list/tuple.
+#+END_SRC
+
+*** COMMENT List comprehensions and filtering
+Python has a quasi-functional construct known as list comprehensions, which implement the equivalent of ~map~ and ~filter~ functions. I use these to manipulate arrays, calling functions on individual elements and/or filtering arrays. These allowed me to elegantly and readably construct new lists.
+#+BEGIN_SRC python
+clean = flatten(docArr)  # Each elem of clean is a line of text
+lowered = [i.lower() for i in clean]
+meta = [i for i in lowered if ":" in i or "-" in i]
+agenda = [i for i in meta if "topic" in i]
+committee = [i for i in meta if "committee" in i]
+country = [i for i in meta if "country" in i]
+# Using list comprehensions to find lines which may contain useful metadata about documents and save them to a list for further processing.
+#+END_SRC
+*** File manipulation
+The ~python-docx~ library is unable to read or modify hyperlinks in a document. Thus, I interacted directly with Word files, which are ultimately just a collection of XML files. I worked with file structures to create an automated pipeline that extracts a word document as a zip file, replaces link text with a formatted string containing link metadata, and writes it back to the original without corrupting any data.
+#+BEGIN_SRC python
+def writeToDoc(folderPath):
+    """Write a folder (the result of unzipping a word doc) to a word doc
+
+    :param folderPath: Path of the unzipped word doc
+    :returns: Path to the created docx file
+    :rtype: Path
+
+    """
+    docPath = folderPath.resolve().parents[1] / (folderPath.name + ".docx")
+    # pyMUN folder, then find the filename
+    d = shutil.make_archive(docPath, "zip", folderPath)
+    shutil.move(d, docPath)
+    return docPath
+
+
+def getDocumentFile(folderPath):
+    """Given the path to an unzipped word doc, find actual document.xml file
+
+    :param folderPath:Path to word doc (zip file)
+    :returns: Path to the document.xml file contained within it
+    :rtype: String (path)
+
+    """
+    return (
+        f"{folderPath}word/document.xml"
+        if str(folderPath)[-1] == "/"
+        else f"{folderPath}/word/document.xml"
+    )
+#+END_SRC
+*** Storing form responses using 2d arrays
+The ~custom-rules~ section of the form includes a list of rules, each with the following structure: ~[searchtype, searchtext, doctype]~. For instance, a rule might have ~[fulltext, urges, position]~, indicating any document containing the word 'urges' should be classified as a position paper. I stored the rules in a ~nx3~ matrix, and used that to translate them into a JSON representation.
+
+#+BEGIN_SRC python
+rule_matrix = [
+    request.form.getlist("type"),
+    request.form.getlist("text"),
+    request.form.getlist("doctype"),
+] # Individual column of the form (type,text,doctype)
+rule_count = len(rule_matrix[0])
+rule_json = {"name": [], "contains": []}
+for i in range(rule_count):
+    formatted_rule = {"regex": rule_matrix[1][i], "type": rule_matrix[2][i]}
+    rule_json[rule_matrix[0][i]].append(formatted_rule) # Appends to either "name" array or "contains" array, depending on the type of rule
+#+END_SRC
+*** Jinja Templates: Abstracting UI from logic
+My UI is in HTML, using the Jinja2 templating engine. I used Flask and WTForms to define the relevant fields with attributes, and created a Jinja template which automatically loads this text when rendered. Thus, I was able to separate the interface from the design (of the form fields and description) and the logic[fn:7].
+#+BEGIN_SRC html
+<form action="" method="post" role="form">
+    <div class="form-group">
+        <p>{{ form.delay.label }}<br>
+            {{ form.delay(class_="form-control") }}
+        </p>
+        <small class="form-text text-muted">{{ form.delay.description }}</small><br>
+#+END_SRC
+#+BEGIN_SRC python
+class ConfigForm(FlaskForm):
+    delay = TextField(
+        "Delay:", description="Time between program updates/runs (in minutes)"
+    )
+# Partial sample only, for brevity
+#+END_SRC
+
+
+*Word Count: 990*
+** Sources
+*** Libraries
+- Bootstrap, 2020. Bootstrap 4.5.3 [library] Available at: <https://github.com/twbs/bootstrap>
+
+- Google API Team, 2020. Googleapis/Google-Api-Python-Client. [online] GitHub. Available at: <https://github.com/googleapis/google-api-python-client> [Accessed 10 October 2020].
+
+- Gwak, J., 2020. Iterative/Pydrive2. [online] GitHub. Available at: <https://github.com/iterative/PyDrive2> [Accessed 10 October 2020].
+
+- Hill, S. 2020. Docx2Python [library] Available at: <https://github.com/ShayHill/docx2python>
+
+- Lipovsky, J. 2020. URLExtract 1.1 [library] Available at: <https://github.com/lipoja/URLExtract>
+
+- Pallets, 2020. Flask 1.1.2. [library] Available at: <https://github.com/pallets/flask>
+
+- Richardson, L. 2020. Beautiful Soup 4 [library] Available at: <https://www.crummy.com/software/BeautifulSoup/>
+
+- Senetar, A. 2018. Send2Trash 1.5.0 [library] Available at: <https://github.com/arsenetar/send2trash>
+
+- Shah, A. 2019. Python-Docx2Text 0.8 [library] Available at: <https://github.com/ankushshah89/python-docx2txt>
+
+- WTForms, 2020. WTForms 2.3.3 [library] Available at: <https://github.com/wtforms/wtforms>
+
+*** Official Documentation
+- Canny, S., 2020. Python-Docx — Python-Docx 0.8.10 Documentation. [online] Python-docx.readthedocs.io. Available at: <https://python-docx.readthedocs.io/en/latest/index.html> [Accessed 10 October 2020].
+
+- Canny, S., 2020. Working With Text — Python-Docx 0.8.10 Documentation. [online] Python-docx.readthedocs.io. Available at: <https://python-docx.readthedocs.io/en/latest/user/text.html> [Accessed 10 October 2020].
+
+- Google Developers, 2020. Google Workspace And Drive MIME Types  |  Google Drive API. [online] Google Developers. Available at: <https://developers.google.com/drive/api/v3/mime-types> [Accessed 10 October 2020].
+
+- Google Docs Developers, 2020. Python Quickstart  |  Google Docs API  |  Google Developers. [online] Google Developers. Available at: <https://developers.google.com/docs/api/quickstart/python> [Accessed 10 October 2020].
+
+- Google Docs Developers, 2020. REST Resource: Documents  |  Google Docs API  |  Google Developers. [online] Google Developers. Available at: <https://developers.google.com/docs/api/reference/rest/v1/documents#Document> [Accessed 10 October 2020].
+
+- Google Drive Developers, 2020. Files  |  Google Drive API  |  Google Developers. [online] Google Developers. Available at: <https://developers.google.com/drive/api/v3/reference/files> [Accessed 10 October 2020].
+
+- Google Drive Developers, 2020. Files: Export  |  Google Drive API  |  Google Developers. [online] Google Developers. Available at: <https://developers.google.com/drive/api/v3/reference/files/export> [Accessed 10 October 2020].
+
+- Google Drive Developers, 2020. Files: List  |  Google Drive API  |  Google Developers. [online] Google Developers. Available at: <https://developers.google.com/drive/api/v2/reference/files/list#python> [Accessed 10 October 2020].
+
+- Google Drive Developers, 2020. Search For Files And Folders  |  Google Drive API  |  Google Developers. [online] Google Developers. Available at: <https://developers.google.com/drive/api/v2/search-files> [Accessed 10 October 2020].
+
+- Gwak, J., Blevins, S. and Nabel, R., 2020. Quickstart — Pydrive 1.3.0 Documentation. [online] Gsuitedevs.github.io. Available at: <https://gsuitedevs.github.io/PyDrive/docs/build/html/quickstart.html> [Accessed 10 October 2020].
+
+- Gwak, J., Blevins, S. and Nabel, R., 2020. Welcome To Pydrive’S Documentation! — Pydrive 1.3.0 Documentation. [online] Gsuitedevs.github.io. Available at: <https://gsuitedevs.github.io/PyDrive/docs/build/html/index.html> [Accessed 10 October 2020].
+
+- Python Software Foundation, 2020. Urllib.Parse — Parse Urls Into Components — Python 3.9.0 Documentation. [online] Docs.python.org. Available at: <https://docs.python.org/3/library/urllib.parse.html> [Accessed 10 October 2020].
+
+- Python Software Foundation, 2020. Zipfile — Work With ZIP Archives — Python 3.9.1 Documentation. [online] Docs.python.org. Available at: <https://docs.python.org/3/library/zipfile.html> [Accessed 8 December 2020].
+
+- Pallets, n.d. Data Structures — Werkzeug Documentation (1.0.X). [online] Werkzeug.palletsprojects.com. Available at: <https://werkzeug.palletsprojects.com/en/1.0.x/datastructures/#werkzeug.datastructures.MultiDict> [Accessed 8 December 2020].
+
+- Pallets, n.d. Template Designer Documentation — Jinja Documentation (2.11.X). [online] Jinja.palletsprojects.com. Available at: <https://jinja.palletsprojects.com/en/2.11.x/templates/> [Accessed 13 January 2021].
+
+- Stratis, K., n.d. How To Use Generators And Yield In Python – Real Python. [online] Realpython.com. Available at: <https://realpython.com/introduction-to-python-generators/> [Accessed 13 January 2021].
+*** Code snippets
+- Paloor, J., 2017. Python Program To Read A Url And Extract Its Meta Keyword And Meta Description. [online] Gist. Available at: <https://gist.github.com/jineshpaloor/6478011> [Accessed 10 October 2020].
+*** Other
+
+- Altenkirch, T., 2020. Coding Trees In Python. [video] Available at: <https://www.youtube.com/watch?v=7tCNu4CnjVc> [Accessed 10 October 2020].
+
+- Jablonski, J., 2020. Python 3'S F-Strings: An Improved String Formatting Syntax (Guide) – Real Python. [online] Realpython.com. Available at: <https://realpython.com/python-f-strings/> [Accessed 10 October 2020].
+
+- KFC, 2020. Model UN Made Easy: How To Write A Resolution - Best Delegate Model United Nations. [online] Best Delegate Model United Nations. Available at: <https://bestdelegate.com/model-un-made-easy-how-to-write-a-resolution/> [Accessed 10 October 2020].
+
+- Malik, U., 2020. Reading And Writing MS Word Files In Python Via Python-Docx Module. [online] Stack Abuse. Available at: <https://stackabuse.com/reading-and-writing-ms-word-files-in-python-via-python-docx-module/> [Accessed 10 October 2020].
+
+- Mozilla, 2019. Common MIME Types. [online] MDN Web Docs. Available at: <https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types> [Accessed 10 October 2020].
+
+- Mozilla, 2019. MIME Types (IANA Media Types). [online] MDN Web Docs. Available at: <https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types> [Accessed 10 October 2020].
+
+- Pythonspot, 2020. Python Tree Data Structure. [online] pythonspot. Available at: <https://pythonspot.com/python-tree/> [Accessed 10 October 2020].
+* Footnotes
+
+[fn:7] Pallets, n.d. Template Designer Documentation — Jinja Documentation (2.11.X). [online] Jinja.palletsprojects.com. Available at: <https://jinja.palletsprojects.com/en/2.11.x/templates/> [Accessed 13 January 2021].
+
+
+# [fn:6] Cite word-doc/xml related stuff here
+
+[fn:5] Stratis, K., n.d. How To Use Generators And Yield In Python – Real Python. [online] Realpython.com. Available at: <https://realpython.com/introduction-to-python-generators/> [Accessed 13 January 2021].
+
+# [fn:4] I can cite everything here
+
+[fn:3] Pythonspot, 2020. Python Tree Data Structure. [online] pythonspot. Available at: <https://pythonspot.com/python-tree/> [Accessed 10 October 2020].
+
+[fn:2] Altenkirch, T., 2020. Coding Trees In Python. [video] Available at: <https://www.youtube.com/watch?v=7tCNu4CnjVc> [Accessed 10 October 2020].
+
+[fn:1] Bootstrap, 2020. Bootstrap 4.5.3 [library] Available at: <https://github.com/twbs/bootstrap>

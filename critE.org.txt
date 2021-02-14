@@ -1,0 +1,60 @@
+* Criterion E
+** COMMENT Success Criteria
+See OOWriter file
+** Testing
+(All tests not mentioned here were demonstrated in the video documentation)
+*** Drive metadata manipulation
+#+DOWNLOADED: file:///home/rohan/Pictures/1612519926.png @ 2021-02-05 14:45:57
+[[file:Criterion_E/2021-02-05_14-45-57_1612519926.png]]
+
+*** Link metadata
+#+DOWNLOADED: file:///home/rohan/Pictures/1612520900.png @ 2021-02-05 14:46:07
+[[file:Criterion_E/2021-02-05_14-46-07_1612520900.png]]
+
+*** COMMENT Referencing/linking functions
+*** Link replacement/reformatting
+Screenshot of a link correctly formatted (within a citation) in a Google Doc:
+#+DOWNLOADED: file:///home/rohan/Pictures/1612518679.png @ 2021-02-13 15:50:19
+[[file:Criterion_E/2021-02-13_15-50-19_1612518679.png]]
+
+** Client Feedback
+The client generally approved of the app's features, and the way it handles things unobtrusively in the background.
+However, they noted that the app needs more ways of /using/ the information it extracts/processes. For instance, they suggested that I introduce pop-ups and toolbars in the Drive UI that allowed users to see this information up-front (rather than hunting for it in the description)
+They also suggested that the program's usability (for users who are less tech-savvy) is lacking, since there's no external documentation[fn:4], and there were no builtin examples of custom rules.
+
+# # - The UI should be more responsive.
+# - Would help if the app could sort files into folders
+# - Sorting by conference would be helpful
+# - Basically, there need to be better ways of /using/ the information this tool extracts, such as enhancements to the Google Drive UI.
+# - External documentation would make this product more usable (I created a README in response to this suggestion)
+# - The program should come with some built-in custom rules/overrides (for instance, if the document title contains 'Notes' it should be classified as such)
+** Potential Improvements
+*** Better heuristics based on user feedback
+Since the only samples of MUN documents I had were my own (and those of some of my friends), some of the heuristics I use reflect my own idiosyncracies, or on conventions which might not be universal. With wider usage, I'll be able to determine these failings and correct for them. If there are custom classifications that a lot of users implement, I might include those as defaults within the main program.
+*** COMMENT Reliable intelligent auto-formatting
+
+*** Better rewriting/modifying documents
+Modifying documents requires tinkering with a word document, which has an extremely complicated (and honestly quite opaque) specification, and its difficult to do so while preserving structure and formatting. More reliable ways to rewrite documents would make the auto-formatting feature more reliable. If any libraries exist for this they could be used, or we could implement various useful functions (such as modifying formatting, etc.) by modifying the XML.
+
+*** Associate files with specific conferences, and sort them accordingly.
+Currently, files can be associated with committees and topics. However, they can't be associated with specific dates and conferences. Doing so would allow users to 'archive' past documents and focus only on present conferences. It would also give users more
+*** COMMENT Auto-open UI
+
+*** Performance Improvements
+As it stands, the program takes quite a long time to run, since it needs to download and process a lot of documents. There are a variety of changes which would likely improve performance. Caching document metadata, etc. might improve performance for frequently-changed documents, albeit at the cost of more memory/disk space.
+
+For Google Docs, it's possible to analyse the document without downloading the entire thing, using the Google Docs API. I should introduce functionality which can accomplish that. It would mean that only Word documents would need to be fully downloaded, thus improving the program's performance.
+
+*** Rewrite based on official specs
+The current document parsing functions rely on XML parsing and on existing libraries. It is likely that a program which took into account the existing spec for docx files would be able to modify them while preserving structure and formatting, such as using the spec to identify which elements should be preserved and which should be manipulated.
+
+However, since Microsoft Word is proprietary, it's unknown how much they adhere to these open specifications (especially since there's known incompatibility between open tools (LibreOffice Writer) and MS Word.
+
+*** Automatically create shortcuts within the requisite folders
+Google Drive no longer allows files to exist in multiple folders. Instead, they have introduced a shortcut mechanism where we can create multiple links to files within folders. Although this can be done using google's REST API (i.e. commands can be called using formatted https requests) it doesn't expose that functionality through pydrive. Introducing this functionality and integrating it with my code would be extremely helpful.
+** COMMENT Extensibility (Technical)
+I've used separation of concerns to decouple the UI presentation from the actual parsing of the settings. This means that UI improvements can be made with minimal hassle.
+Similarly, the 'customisable' elements, such as the custom rules for classifiers, are separated from the program's own heuristic classifications and encapsulated within their own functions. Thus, it would be easy to introduce additional rules without modifying the core logic of the program, and to introduce more specific filtering mechanisms.
+* Footnotes
+
+[fn:4] Based on this feedback, I created a README file distributed with the code.
