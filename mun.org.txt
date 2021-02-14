@@ -62,7 +62,7 @@ I chose Python because it has a lot of simple libraries and APIs that can interf
 17. Users should be able to specify custom rules, for classifying documents, based on the following criteria:
     - Contains <phrase>
     - Name=<phrase>
-  # - Age=<number of days> (Age will be computed) based on the files last-modified date and the current date. All calculations will be done in UTC.
+  # - Age=<number of days> (Age will be computed) based on the files last-modified date and the current date. All calculations will be done in *.
 
 * Criterion B
 ** COMMENT Record of Tasks
@@ -879,7 +879,6 @@ So we pass the file object directly. We try it against the namerules, or
 - Crit D: Add extensibility/layer discussion, and heuristic composition
 - Mention client/objective in crit C (optional)
 - Appendices
-- Test result screenshots
 - GANTT
 
 # - Make sure each criterion is covered by the test plan.
@@ -909,9 +908,28 @@ So we pass the file object directly. We try it against the namerules, or
 * COMMENT Appendices
 ** Crit A
 *** Initial Conversation
+**** Problems Faced
+-
 *** Discussion of Problems, Finalising Solution
+- Students: Sorting and keeping track of different documents (in a way more sophisticated than normal file management, and which is cognizant of existing MUN stuff)
+- Formatting documents and keeping track of conventions
+- Bibliography management (although there are existing tools for this, just under-utilised)
+- Solution: Google drive `add-on' that can automatically identify documents, and format them in a way that respects conventions.
 *** Outlining Requirements
+- Usability
+- Google Drive integration, since that's something commonly used
+- Sorting
+- Managing research resources/references, either within documents or externally
+- Automated and unobtrusive, as far as possible
+- Configurable, and adaptable to different styles and workflows
 ** COMMENT Crit B
 ** Crit C
 *** Libraries
 ** Crit E
+* COMMENT Submission
+Use forms.zip structure
+# HTML cover page
+
+Folder:
+Subfolder docs (including video)
+Subfolder product
