@@ -1,6 +1,7 @@
 * Criterion E
-** COMMENT Success Criteria
-See OOWriter file
+** Success Criteria Evaluation
+General client feedback is discussed after the /Testing/ section, and client feedback on individual criteria is discussed in appendix E-1.
+# See OOWriter file
 ** Testing
 (All tests not mentioned here were demonstrated in the video documentation)
 *** Drive metadata manipulation
