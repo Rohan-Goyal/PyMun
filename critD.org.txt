@@ -50,4 +50,4 @@ The actual app would run periodically, and it would only download and analyse fi
 - Links,  classifying some HTML files/PDFS as research sources
 - Demonstrate link formatting
 ** <2021-02-14 Sun> Extensibility discussion (layers)
-The tool
+The app uses various heuristics to better classify documents. These heuristics are separated into various layers, such as a separation between built-in heuristics that examine the structure of documents and user-created rules about the text of the documents. These heuristics can be composed to create more sophisticated filters, making the program more extensible. Thus, we can easily define new heuristics with different priorities and include them in the main classifier with a simple function call or two.

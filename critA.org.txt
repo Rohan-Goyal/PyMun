@@ -1,3 +1,6 @@
+#+OPTIONS: toc:nil
+#+LATEX_HEADER: \usepackage[margin=0.8in]{geometry}
+#+LATEX_HEADER: \raggedright
 * Criterion A
 ** Defining the Problem
 My client is the supervisor of the school's MUN (Model United Nations) club. With their advice and supervision, I intend to develop a software solution which makes preparation for MUN easier for participating students (See appendix A-1 for discussion).

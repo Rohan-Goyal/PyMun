@@ -1,7 +1,7 @@
 #+LATEX_HEADER: \usepackage[margin=0.8in]{geometry}
 #+LATEX_HEADER: \raggedright
 #+OPTIONS: toc:nil
-* COMMENT Planning for the MUN product
+* Planning for the MUN product
 Today:
 - Comprehensive spec
 - Ms. Rizwana
@@ -31,7 +31,7 @@ Multi-dimensional arrays
 -
 ** Kinds of documents
 -
-* COMMENT Re-imagining the document classifier
+* Re-imagining the document classifier
 ** Classifier
 *** Heuristics
 - DONE-ish List indentation
@@ -73,7 +73,7 @@ Getting note metadata reliably: No idea. Basically, we can give them null metada
 
 ** DONE Autoformat
 Don't put too much work into this - make it perpetually beta, and warn people not to use it (Add that warning as placeholder (in red, naturally), into the main UI)
-* COMMENT Custom rules
+* Custom rules
 ** DONE UI
 Define a 'component' of sorts (a horizontal form) that represents a customRule. When webform is initialised, it should read the custom rules and create components for each of them. Wrap all the components in a div or whatever. After the div, have a + button that adds a form element to the div using JS. This will be messy, and require duplication between JS and Py.
 *** DONE
@@ -88,13 +88,13 @@ Define a 'component' of sorts (a horizontal form) that represents a customRule. 
 Basically, they give us three values: (Contains/name),(string),(classification).
 We should call this from the updateMetadata func. We first check the namerules, then the containRules, and if none of those work we use magicParse. So it accepts a result obtained by downloadHelper, which has the title, localpath, etc.
 So we pass the file object directly. We try it against the namerules, or
-* COMMENT Notes
+* Notes
 # - Time complexity/elegance
 # - Separation accomplished through templates
 # - Abstraction accomplished
 # - Global variables: I only require one.
 # - Questions: How many flowcharts for each criterion?
-* COMMENT Feedback <2020-12-08 Tue>
+* DONE Feedback <2020-12-08 Tue>
 - No names in final document (Format)
 - Add TOC of sorts of complex code techniques. (Format)
 - Defend why I used techniques: Too many buzzwords as it stands. Focus on justification/valuing
@@ -105,7 +105,7 @@ So we pass the file object directly. We try it against the namerules, or
 # - Consider briefly annotating some entries with things like <library>, <documentation>, <theoretical reference>, etc. (Think about how to do this)
 # - Consider doing that via formatting/colours
 # - Add a blanket disclaimer to sources
-* COMMENT TODO
+* DONE Todo items
 - Ask Ms. Almas about personal information in the video
 # - Ask her if I should include results from unit tests, etc. in criterion D/E
 - Ms. Rizwana: Feedback via text/email
@@ -122,23 +122,43 @@ So we pass the file object directly. We try it against the namerules, or
 # - C should have charts for specific fiddly bits.
 - Consider adding focus on client/objective in crit C
 - Add crit C appendix, acknowledging libraries used
-- In Crit D, include evidence of error handling and the like.
+-  In Crit D, include evidence of error handling and the like.
 - In crit D video, add extensibility discussion: Discussion of layers for heuristics, and how multiple heuristics can be composed (such as the custom/builtin heuristics) to create sophisticated filters/analyses.
-* COMMENT TODO <2021-02-13 Sat>
+* DONE <2021-02-13 Sat>
 - Crit D: Add extensibility/layer discussion, and heuristic composition
 - Appendices
 # - GANTT
 
 # - Make sure each criterion is covered by the test plan.
-* COMMENT Consulting
+* Consulting
 - Compose message to Ms. Rizwana about this.
 - Send her brief outline of designs
 - Ask her what she thinks about it
 
-* COMMENT Submission
+* Submission
 Use forms.zip structure
 # HTML cover page
 
 Folder:
 Subfolder docs (including video)
 Subfolder product DONE
+
+* Feedback <2021-02-23 Tue>
+- Appendices: Refine
+- Remove email IDs (since those give school info) from appendix
+- Appendices for evidence of consultation.
+- Split appendices into separate documents: each named appendix-n
+- Add borders to the crit E table.
+- At opening of E, note where client feedback is discussed.
+- Explicitly reference the client needs, etc. when discussing improvements in crit E.
+
+** Appendices: 6 total
+1. Initial consultation (problem identification)
+2. Detailed interview for product and rationale
+3. Detailed interview for success criteria
+4. Detailed interview about prototype/designs (crit B). Reach out to her directly. If I have notes, use those, otherwise conduct a formal interview
+5. Code listing (word document) of all files
+6. Client feedback on success criteria (max of 3 pages). Ideally, feedback of each success criteria. Can be notes or interview transcript. Explicitly reference this appendix in crit E.
+Table should have col A= criterion, col B= client comments.
+
+NOTE: Make sure to reference appendices in documentation.
