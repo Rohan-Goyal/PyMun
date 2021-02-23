@@ -1,0 +1,14 @@
+* Appendix A-2: Discussion of Product, Rationale, and Requirements
+
+Notes from a discussion with my client, taken on my phone
+
+#+DOWNLOADED: file:///home/rohan/Downloads/Screenshot_20210215-111246_iA%20Writer.jpg @ 2021-02-15 11:17:19
+[[file:Appendices/2021-02-15_11-17-19_Screenshot_20210215-111246_iA Writer.jpg]]
+
+**** COMMENT Text
+- Usability
+- Google Drive integration, since that's something commonly used
+- Sorting
+- Managing research resources/references, either within documents or externally
+- Automated and unobtrusive, as far as possible
+- Configurable, and adaptable to different styles and workflows

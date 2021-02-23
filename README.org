@@ -1,0 +1,6 @@
+TODO
+* Overview
+* Functionality
+* Config
+** Custom Rules
+* File Structure
