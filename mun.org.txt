@@ -161,4 +161,4 @@ Subfolder product DONE
 # 5. DONE Code listing (word document) of all files
 6. Client feedback on success criteria (max of 3 pages). Ideally, feedback of each success criteria. Can be notes or interview transcript. Explicitly reference this appendix in crit E. (TODO: Docx)
 
-NOTE: Make sure to reference appendices in documentation.
+# DONE: Make sure to reference appendices in documentation.

@@ -1,4 +1,17 @@
 * Criterion C
+** Index of Techniques Used
+1. Hash Tables
+2. Files: Persistent Storage
+3. HTML GUI
+4. Data Structures: Trees
+5. Recursion on Trees
+6. Inheritance
+7. Libraries
+8. Quasi-functional Programming
+9. Arbitrarily-nested Arrays
+10. File Manipulation
+11. 2d Arrays
+12. Jinja Templates: Separation of Concerns
 ** UML
 *** batchProcess() function: High-level overview of how the program works
 
@@ -34,7 +47,7 @@ I divided my code into 3 files: One which handled the interfacing with google dr
 #+DOWNLOADED: file:///home/rohan/d/cs/ia/webform-semantic.png @ 2021-02-14 12:44:50
 [[file:Criterion_C/2021-02-14_12-44-50_webform-semantic.png]]
 
-** Complex code and explanation
+** Complex Code and Explanation
 *** Data structures: Hash tables
 My program makes extensive use of dictionaries (key-value stores). The metadata added to documents is represented as a structured hashtable. This allows them to be serialised to plaintext more easily, making it easier to send the data to the Drive API.
 #+BEGIN_SRC python
@@ -183,7 +196,7 @@ from pprint import pprint
 from re import findall
 #+END_SRC
 
-*** Quasi-functional programming: Optimising Network Calls
+*** Quasi-functional programming: Optimising network calls
 In testing the program, I discovered calls to ~Upload()~ and ~Download()~ from the Google Drive API were by far the most expensive components of my programming. I borrowed some ideas from functional programming - Instead of uploading the file with each function, the function accepts a DriveFile object (defined in the Pydrive2 library) and returns a modified version of it. Thus, I can chain multiple such functions together and simply upload the last returned object with all the changes made, which greatly increases the programs performance.
 
 #+BEGIN_SRC python
@@ -209,7 +222,7 @@ def createFolder(name, parentId, drive=mydrive):
 # If a folder with that name already exists at that path, just return that instead of creating a new on# If a folder with that name already exists at that path, just return that instead of creating a new onee
 #+END_SRC
 
-*** Advanced Data Structures: Navigating nested arrays
+*** Advanced data structures: Navigating nested arrays
 To extract metadata from documents, I had to traverse an arbitrarily-nested array. To handle this neatly, I defined a recursive ~flatten~ function. Since it deals exclusively with lists and tuples, it uses the python construct ~yield~ instead of return. Thus, it returns individual elements, which automatically accumulate into an iterable.[fn:5].
 #+BEGIN_SRC python
 def flatten(iterable):  # WARNING: Does not work on dicts
@@ -281,7 +294,7 @@ for i in range(rule_count):
     formatted_rule = {"regex": rule_matrix[1][i], "type": rule_matrix[2][i]}
     rule_json[rule_matrix[0][i]].append(formatted_rule) # Appends to either "name" array or "contains" array, depending on the type of rule
 #+END_SRC
-*** Jinja Templates: Abstracting UI from logic
+*** Jinja templates: Abstracting UI from logic
 My UI is in HTML, using the Jinja2 templating engine. I used Flask and WTForms to define the relevant fields with attributes, and created a Jinja template which automatically loads this text when rendered. Thus, I was able to separate the interface from the design (of the form fields and description) and the logic[fn:7].
 #+BEGIN_SRC html
 <form action="" method="post" role="form">
