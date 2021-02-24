@@ -1,5 +1,10 @@
 * Appendix A-3: Discussion of First-draft Success Criteria
 
+#+DOWNLOADED: file:///home/rohan/Downloads/Screenshot_20210224-131155_iA%20Writer.jpg @ 2021-02-24 13:12:32
+[[file:Appendix_A-3:_Discussion_of_First-draft_Success_Criteria/2021-02-24_13-12-32_Screenshot_20210224-131155_iA Writer.jpg]]
+
 ** COMMENT Drafting
-- Privacy concerns
-- Make it run automatically in the background 
+- Privacy concerns: Both in terms of the authorisation method used, and user ability to confirm security, de-authorise the app, etc.
+- Make it run automatically in the background
+- If possible, tags should also be able to capture MUN-specific information, such as the committee and agenda
+- Program UI should use a format familiar to users, and not requiring intensive setup.

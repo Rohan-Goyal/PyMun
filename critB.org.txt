@@ -143,24 +143,29 @@ class Tree:
 *** Unit tests
 **** Drive retrieval/metadata manipulation functions (Success Criteria 2,7,9)
  Call the following code (It finds a file, reads the content, adds metadata, and reads that new metadata:
+
  #+BEGIN_SRC python
 x=getFile('Position Paper')
 y=addMetadata(x,{'type':'position paper'})
 y.Upload()
 print(getMetadata(y))
  #+END_SRC
+
 It should run without error and print {type:position paper}
 
 **** Link metadata functions (Success Criteria 6,12)
+
 #+BEGIN_SRC  python
 print(getLinkData("https://www.un.org/securitycouncil/content/resolutions-0"))
 #+END_SRC
+
 It should correctly retrieve the webpage title, and the source website.
 **** Auto-formatting functions on a local document (Success Criteria 4,11)
 - Create a local Word/Docx file with intentional formatting errors (based on tinkering with an old MUN document a friend of mine created).
 - Pass it through the auto-formatter. Inspect the output- this must be done by eye.
 
 **** Referencing/linking functions (Success Criteria 10)
+
 #+BEGIN_SRC python
 folder=createFolder('mun-unit-test')
 folder.Upload()
@@ -168,13 +173,16 @@ paper=getFile('mun-paper')
 link=createLink(paper,folder)
 link.Upload()
 #+END_SRC
+
 On visiting the folder in the Drive web interface, there should be a folder mun-unit-test with a file mun-paper in it.
 # Ran without error, but the file was not copied
 **** Link replacer functions (Success Criteria 6,12)
+
 #+BEGIN_SRC python
 fname="/home/{user}/tmp/IOC_Extract.docx"
 replaceLinks(fname)
 #+END_SRC
+
 This should replace all the links in the given file with a string that includes metadata, and write that new file to the file ~{fname}-links_replaced.docx~. Then inspect that file to ensure link replacement went properly.
 
 *** Integration tests

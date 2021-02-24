@@ -150,7 +150,7 @@ Subfolder product DONE
 # - DONE, mostly. Split appendices into separate documents: each named appendix A-1, E-1, E-2, etc. as appropriate
 # - DONE Add borders to the crit E table.
 # - DONE At opening of E, note where client feedback is discussed.
-- Explicitly reference the client needs, etc. when discussing improvements in crit E.
+# - DONE Explicitly reference the client needs, etc. when discussing improvements in crit E.
 - (Recommended highly) README.org file, distributed with the code
 
 ** Appendices: 6 total
