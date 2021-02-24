@@ -20,7 +20,7 @@
 [[file:Criterion_C/2020-10-11_17-02-12_tree.svg]]
 
 ** Code Structure
-I divided my code into 3 files: One which handled the interfacing with google drive, one which handled the manipulation of local Docx files, and one which handled the web GUI.
+I divided my code into 3 files: One which handled the interfacing with google drive, one which handled the manipulation of local Docx files, and one which handled the web GUI. See appendix C-1 for a full code listing
 
 *** Google Drive Manipulation
 #+DOWNLOADED: file:///home/rohan/d/cs/ia/gdrive-semantic.png @ 2021-02-14 12:44:34

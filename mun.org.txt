@@ -145,7 +145,7 @@ Subfolder product DONE
 
 * TODO Feedback <2021-02-23 Tue>
 - Appendices: Refine
-- Remove email IDs (since those give school info) from appendix
+# - DONE Remove email IDs (since those give school info) from appendix
 - Appendices for evidence of consultation.
 # - DONE, mostly. Split appendices into separate documents: each named appendix A-1, E-1, E-2, etc. as appropriate
 # - DONE Add borders to the crit E table.

@@ -28,7 +28,7 @@ The aim of this program is to automate file management for users. Thus, it needs
 I chose Python because it has a lot of simple libraries and APIs that can interface with google services. Specifically, google provides a set of APIs for dealing with docs, and third parties also provide more convenient wrappers such as PyDrive. Since much of the data will deal with semantic markup and document metadata, it will be represented internally using XML or JSON flat files. Python has excellent support for both of those, including converting them to and from native data structures.
 # Furthermore, I have worked with python on previous projects in the past and so using something which I'm familiar with should save on development time and minimise errors.
 *Word Count: 249*
-** Success Criteria
+** Success Criteria (See appendix A-3 for client discussion)
 *** COMMENT Crud
 - Able to use links/references to place files in multiple folders based on metadata
 - Has internal representation of folder hierarchies, files as objects, etc. (more design principle than criterion)

@@ -1,4 +1,5 @@
 * Appendix A-3: Discussion of First-draft Success Criteria
 
 ** COMMENT Drafting
-TODO
+- Privacy concerns
+- Make it run automatically in the background 
