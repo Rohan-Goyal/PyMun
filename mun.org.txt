@@ -144,21 +144,20 @@ Subfolder docs (including video)
 Subfolder product DONE
 
 * TODO Feedback <2021-02-23 Tue>
-- Appendices: Refine
+- (Recommended highly) README.org file, distributed with the code
+# - DONE Appendices for evidence of consultation.
 # - DONE Remove email IDs (since those give school info) from appendix
-- Appendices for evidence of consultation.
 # - DONE, mostly. Split appendices into separate documents: each named appendix A-1, E-1, E-2, etc. as appropriate
 # - DONE Add borders to the crit E table.
 # - DONE At opening of E, note where client feedback is discussed.
 # - DONE Explicitly reference the client needs, etc. when discussing improvements in crit E.
-- (Recommended highly) README.org file, distributed with the code
 
 ** Appendices: 6 total
 # 1. DONE Initial consultation (problem identification)
 # 2. DONE (I think it's done) Detailed interview for product and rationale
-3. Detailed interview for success criteria (TODO: org)
+# 3. DONE Detailed interview for success criteria
 # 4. DONE Detailed interview about prototype/designs (crit B). Reach out to her directly. If I have notes, use those, otherwise conduct a formal interview
 # 5. DONE Code listing (word document) of all files
-6. Client feedback on success criteria (max of 3 pages). Ideally, feedback of each success criteria. Can be notes or interview transcript. Explicitly reference this appendix in crit E. (TODO: Docx)
+# 6. DONE Client feedback on success criteria (max of 3 pages). Ideally, feedback of each success criteria. Can be notes or interview transcript. Explicitly reference this appendix in crit E.
 
 # DONE: Make sure to reference appendices in documentation.

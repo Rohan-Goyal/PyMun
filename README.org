@@ -1,6 +1,9 @@
-TODO
+# TODO: All of this
 * Overview
 * Functionality
+** Tags
+** Classification
+** Running the program
 * Config
 ** Custom Rules
 * File Structure
