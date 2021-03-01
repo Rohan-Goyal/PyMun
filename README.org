@@ -1,3 +1,4 @@
+#+LATEX_HEADER: \usepackage[margin=0.6in]{geometry}
 * Running the Program
 - This assumes you have some version of ~python3~ and ~pip~ installed on your computer. If you don't, view https://wiki.python.org/moin/BeginnersGuide/Download to download python and https://pip.pypa.io/en/stable/installing/ to install pip
 - Run ~pip install -r requirements.txt~ in your terminal, to install the necessary packages
@@ -18,7 +19,7 @@ The program tags documents with the following metadata:
 #+END_SRC
 The metadata is stored in the file's description, and used for things such as searches, sorting, etc. The metadata is added based on heuristics, so it's not guaranteed to be perfect.
 ** Links
-The program also reformats `naked' links found in documents with a string of the format "<title>|<source> [<url>]"
+The program also reformats `naked' links found in documents with a string of the format ~<title>|<source> [<url>]~
 * Configuration
 ** General
 *** Delay
