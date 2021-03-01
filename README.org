@@ -1,9 +1,23 @@
-# TODO: All of this
 * Overview
+* Running the Program
+- This assumes you have some version of ~python3~ and ~pip~ installed on your computer. If you don't, view https://wiki.python.org/moin/BeginnersGuide/Download to download python and https://pip.pypa.io/en/stable/installing/ to install pip
+- Run ~pip install -r requirements.txt~ in your terminal, to install the necessary packages
+- To open up the settings, navigate to the product folder and run ~python3 webform.py~
+- To run the main classification program (only do so after you have configured the program to your liking), run the command ~python3 gdrive_tools.py~. The program will run in the background until you kill it or restart your computer.
 * Functionality
-** Tags
+The program runs its classifier periodically. Once the program is activated, it will run automatically every 10 or so minutes (depending on how you configured it).
 ** Classification
-** Running the program
-* Config
+The program tags documents with the following metadata:
+#+BEGIN_SRC json
+{
+"type": ("source", "note", "position", "resolution", "unclassified"),
+"agenda": "string",
+"committee": "string",
+"country": "string",
+"filetype": ("html", "pdf", "docx", "gdoc", "md", "etc."),
+}
+#+END_SRC
+The metadata is stored in the file's description, and used for things such as searches, sorting, etc. The metadata is added based on heuristics, so it's not guaranteed to be perfect
+* Configuration
 ** Custom Rules
-* File Structure
+You can define custom classification rules
