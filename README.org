@@ -1,11 +1,10 @@
-* Overview
 * Running the Program
 - This assumes you have some version of ~python3~ and ~pip~ installed on your computer. If you don't, view https://wiki.python.org/moin/BeginnersGuide/Download to download python and https://pip.pypa.io/en/stable/installing/ to install pip
 - Run ~pip install -r requirements.txt~ in your terminal, to install the necessary packages
 - To open up the settings, navigate to the product folder and run ~python3 webform.py~
 - To run the main classification program (only do so after you have configured the program to your liking), run the command ~python3 gdrive_tools.py~. The program will run in the background until you kill it or restart your computer.
 * Functionality
-The program runs its classifier periodically. Once the program is activated, it will run automatically every 10 or so minutes (depending on how you configured it).
+The program runs its classifier periodically. Once the program is activated, it will run automatically every 10 or so minutes (depending on how you configured it). The program examines documents within a specific folder, and tags/classifies them as best as it can
 ** Classification
 The program tags documents with the following metadata:
 #+BEGIN_SRC json
@@ -17,7 +16,17 @@ The program tags documents with the following metadata:
 "filetype": ("html", "pdf", "docx", "gdoc", "md", "etc."),
 }
 #+END_SRC
-The metadata is stored in the file's description, and used for things such as searches, sorting, etc. The metadata is added based on heuristics, so it's not guaranteed to be perfect
-* Configuration
+The metadata is stored in the file's description, and used for things such as searches, sorting, etc. The metadata is added based on heuristics, so it's not guaranteed to be perfect.
+** Links
+The program also reformats `naked' links found in documents with a string of the format "<title>|<source> [<url>]"
+* Configuration TODO
+** General
+*** Delay
+*** Auto-format
+*** Folder Path
+*** Authorisation
 ** Custom Rules
-You can define custom classification rules
+You can define custom classification rules, which classify documents as position papers, resolutions, etc. based on either
+1. Whether the title contains a certain phrase
+2. Whether the document text contains a certain phrase
+These custom rules override the built-in rules the program uses, so if you have a personal convention for naming files the program can leverage that.
