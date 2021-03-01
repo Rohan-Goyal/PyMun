@@ -19,12 +19,16 @@ The program tags documents with the following metadata:
 The metadata is stored in the file's description, and used for things such as searches, sorting, etc. The metadata is added based on heuristics, so it's not guaranteed to be perfect.
 ** Links
 The program also reformats `naked' links found in documents with a string of the format "<title>|<source> [<url>]"
-* Configuration TODO
+* Configuration
 ** General
 *** Delay
+The app scans Google Drive at regular intervals. Increasing this value should make the app consume less memory/CPU, and decreasing it lets it update/scan documents more quickly.
 *** Auto-format
+The auto-format feature isn't currently supported, so this option does nothing. Documentation will be updated when that changes.
 *** Folder Path
+The app scans all files within a specified folder. Enter `/' (forward slash) here to make it scan the top-level drive, and enter ~/<foldername>~ to have it scan within a particular folder. You can specify complex paths as follows: ~/folder/subfolder/subsubfolder~
 *** Authorisation
+The program uses OAuth to access Google Drive without knowing the user's password. To remove the app's access to your Drive files, simply click the /de-authorise application/ button and close the tab after a few seconds. If you wish to re-enable this access, open up the configuration UI again, click /re-authorise application/, and sign in with your Google account when prompted to do so.
 ** Custom Rules
 You can define custom classification rules, which classify documents as position papers, resolutions, etc. based on either
 1. Whether the title contains a certain phrase
