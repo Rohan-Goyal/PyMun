@@ -144,10 +144,10 @@ Subfolder docs (including video)
 Subfolder product DONE
 
 * TODO Feedback <2021-02-23 Tue>
-- (Recommended highly) README.org file, distributed with the code
+# - DONE (Recommended highly) README.org file, distributed with the code
 # - DONE Appendices for evidence of consultation.
 # - DONE Remove email IDs (since those give school info) from appendix
-# - DONE, mostly. Split appendices into separate documents: each named appendix A-1, E-1, E-2, etc. as appropriate
+# - DONE mostly. Split appendices into separate documents: each named appendix A-1, E-1, E-2, etc. as appropriate
 # - DONE Add borders to the crit E table.
 # - DONE At opening of E, note where client feedback is discussed.
 # - DONE Explicitly reference the client needs, etc. when discussing improvements in crit E.
@@ -161,3 +161,17 @@ Subfolder product DONE
 # 6. DONE Client feedback on success criteria (max of 3 pages). Ideally, feedback of each success criteria. Can be notes or interview transcript. Explicitly reference this appendix in crit E.
 
 # DONE: Make sure to reference appendices in documentation.
+* <2021-03-14 Sun> Feedback
+- Crit E: Recommended improvements. Make them more specific. Have 2-4, and discuss in depth. Include technical discussion of how to go about defining them
+- Crit B: Flowchart 3 is apparently messed up. Fix that.
+- ROT: Increase time for testing, client discussion, etc.
+- Add a GANTT chart.
+- Video: Expand the size of the main screen. So instead of having code take up 3/4th of the screen. So fullscreen the chrome window when focusing on it, perhaps
+- Appendix A-2: If I have the date and time for discussions, note that.
+** Prioritised
+# - DONE ROT
+- Crit E
+- Appendices: Add dates/times
+- GANTT
+- Video
+- Figure out what's going on with flowchart 3
