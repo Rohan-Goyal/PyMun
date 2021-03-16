@@ -30,28 +30,38 @@ They also suggested that the program's usability (for users who are less tech-sa
 # - External documentation would make this product more usable (I created a README in response to this suggestion)
 # - The program should come with some built-in custom rules/overrides (for instance, if the document title contains 'Notes' it should be classified as such)
 ** Potential Improvements
-*** Better heuristics based on user feedback
+*** COMMENT Better heuristics based on user feedback
 Since the only samples of MUN documents I had were my own, some of the heuristics I use reflect my own idiosyncracies which might not be universal. With wider usage, I'll be able to determine and correct for these failings. If there are custom classifications that a lot of users implement, I might include those as defaults.
 
-*** Better rewriting/modifying documents
+*** COMMENT Better rewriting/modifying documents
 This requires manipulating word documents which have a complicated (and opaque) specification, so its difficult to do while preserving structure and formatting. More reliable ways to rewrite documents would make the auto-formatting feature more reliable. This could rely on existing libraries, or implement various useful functions (modifying formatting, etc.) by modifying the XML.
 
 *** Associate files with specific conferences, and sort them accordingly.
 Currently, files can be associated with committees, but not with dates or conferences. Doing so would let users `archive' past documents and focus only on present conferences, which my client noted would be quite helpful (see appendix E-1).
 
+This would entail creating a new metadata tag, and new heuristics for extracting phrases that sounded like agenda/conference names. To make it useful, we would also need a user-facing mechanism for sorting documents based on whether or not they are archived, which may require creating add-ons to the Google Drive UI.
+
 *** Performance Improvements
 As it stands, the program takes quite a long time to run, since it needs to download and process a lot of documents. There are a variety of changes which would likely improve performance. Caching document metadata, etc. might improve performance for frequently-changed documents, albeit at the cost of more memory/disk space.
 
-For Google Docs, it's possible to analyse the document without downloading it using the Google Docs API. This would mean that only Word documents would need to be fully downloaded, improving performance.
+For Google Docs, it's possible to analyse the document without downloading it using the Google Docs API. This would mean that only Word documents would need to be fully downloaded, improving performance and decreasing network/bandwidth consumption.
+
+Implementing this would require access to the Google Docs (not Drive) API, and some method to connect the Drive and Docs APIs, such as translating between references to files in Drive and actual documents based on their IDs.
 
 *** Rewrite based on official specs
-The current document parsing functions rely on XML parsing and on existing libraries. It is likely that a program which took into account the existing spec for docx files would be able to modify them while preserving structure and formatting, such as using the spec to identify which elements should be preserved and which should be manipulated.
-However, since Microsoft Word is proprietary it's unknown how much they adhere to these open specifications, eespecially since there's known incompatibility between open tools (LibreOffice Writer) and MS Word.
+The current document parsing functions rely on XML parsing and on existing libraries, and as such they're necessarily imperfect. It is likely that a program which took into account the existing spec for docx files would be able to modify them while preserving structure and formatting, such as using the spec to identify which elements should be preserved and which should be manipulated.
+
+However, since Microsoft Word is proprietary it's unknown how much they adhere to these open specifications, especially since there's known incompatibility between open tools (LibreOffice Writer) and MS Word. Thus, although it's certainly worth exploring, this idea might not be entirely successful.
 
 *** Automatically create shortcuts within the requisite folders
-Google Drive no longer allows files to exist in multiple folders. Instead, they have introduced a shortcut mechanism where we can create multiple links to files within folders. Although this can be done using google's REST API (i.e. commands can be called using formatted ~https~ requests) it doesn't expose that functionality through pydrive. My client noted that this functionality would be extremely helpful (See appendix E-1).
+This would allow us to sort files into folders based on their type, agenda, etc., making it easier for users to filter and search for specific documents, such as if they wished to look at examples of past position papers for reference.
+My client noted that this functionality would be extremely helpful (See appendix E-1).
 
-*Word Count: 520*
+Google Drive no longer allows files to exist in multiple folders. Instead, they have introduced a shortcut mechanism where we can create multiple links to files within folders. Although this can be done using google's REST API (i.e. commands can be called using formatted ~https~ requests) it doesn't expose that functionality through pydrive.
+
+Implementing this feature would require using the ~requests~ library in Python to make calls to the API, using JSON and request parameters to specify commands, and defining functions to make common requests to the API based on certain parameters
+
+*Word Count: 500*
 ** COMMENT Extensibility (Technical)
 I've used separation of concerns to decouple the UI presentation from the actual parsing of the settings. This means that UI improvements can be made with minimal hassle.
 Similarly, the 'customisable' elements, such as the custom rules for classifiers, are separated from the program's own heuristic classifications and encapsulated within their own functions. Thus, it would be easy to introduce additional rules without modifying the core logic of the program, and to introduce more specific filtering mechanisms.

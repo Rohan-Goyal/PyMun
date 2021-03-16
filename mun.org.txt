@@ -170,8 +170,9 @@ Subfolder product DONE
 - Appendix A-2: If I have the date and time for discussions, note that.
 ** Prioritised
 # - DONE ROT
-- Crit E
-- Appendices: Add dates/times
-- GANTT
+# - DONE Crit E
+# - DONE Appendices: Add dates/times
+# - DONE GANTT
 - Video
-- Figure out what's going on with flowchart 3
+# - Figure out what's going on with flowchart 3
+# - Consider adding arrows, etc. to crit C to connect concepts to actual code snippets.

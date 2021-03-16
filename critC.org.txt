@@ -120,32 +120,31 @@ class Tree:
 
 *** Recursion on Trees
 I defined an algorithm ~maxDepth~ that finds the height of a tree. This can determine the level of clause nesting in a resolution, and thus identify whether a document is a resolution or not. It's also vital for understanding the structure of a document when auto-formatting.
-
+#+BEGIN_SRC python
+def maxDepth(self):
+  if self.children:
+      depths = [i.maxDepth() for i in self.children]
+      return max(depths) + 1
+  else:
+      return 0
+# Tree with only one node (no children) registers as depth 0.
+#+END_SRC
 I designed an algorithm ~getNestedChild~, which identifies elements in a tree by their "coordinates". To get the first child of the first child of the root node, you would call ~getNestedChild(0,0)~. The algorithm recursively descends the tree, and with each level it descends it slices off the first argument (i.e coordinate), navigating the tree with minimal overhead.[fn:3]
 #+BEGIN_SRC python
-    def maxDepth(self):
-        if self.children:
-            depths = [i.maxDepth() for i in self.children]
-            return max(depths) + 1
-        else:
-            return 0
-        # Tree with only one node (no children) registers as depth 0.
+def getChild(self, n):
+    return self.children[n]
 
-    def getChild(self, n):
-        return self.children[n]
-
-    def getNestedChild(self, *args):
-        if len(args) == 1:
-            return self.getChild(args[0])
-        else:
-            return self.getChild(args[0]).getNestedChild(*args[1:])
+def getNestedChild(self, *args):
+  if len(args) == 1:
+    return self.getChild(args[0])
+  else:
+    return self.getChild(args[0]).getNestedChild(*args[1:])
 #+END_SRC
 
 *** Tree objects and inheritance
 In addition to the basic Tree object, I defined a subclass ~Clause~. This inherits methods like ~__init__~ and ~maxdepth~ from ~Tree~, but includes new methods like ~fromDocArr~, allowing us to construct a specialised tree from a word document. It also includes methods like ~~format~~.
 #+BEGIN_SRC python
 class Clause(Tree):
-
     #    @staticmethod
     def fromDocArr(docArr):
         root = Tree("Document Start")
@@ -236,17 +235,6 @@ def flatten(iterable):  # WARNING: Does not work on dicts
 # Recursively expands everything until it stops being a list/tuple.
 #+END_SRC
 
-*** COMMENT List comprehensions and filtering
-Python has a quasi-functional construct known as list comprehensions, which implement the equivalent of ~map~ and ~filter~ functions. I use these to manipulate arrays, calling functions on individual elements and/or filtering arrays. These allowed me to elegantly and readably construct new lists.
-#+BEGIN_SRC python
-clean = flatten(docArr)  # Each elem of clean is a line of text
-lowered = [i.lower() for i in clean]
-meta = [i for i in lowered if ":" in i or "-" in i]
-agenda = [i for i in meta if "topic" in i]
-committee = [i for i in meta if "committee" in i]
-country = [i for i in meta if "country" in i]
-# Using list comprehensions to find lines which may contain useful metadata about documents and save them to a list for further processing.
-#+END_SRC
 *** File manipulation
 The ~python-docx~ library is unable to read or modify hyperlinks in a document. Thus, I interacted directly with Word files, which are ultimately just a collection of XML files. I worked with file structures to create an automated pipeline that extracts a word document as a zip file, replaces link text with a formatted string containing link metadata, and writes it back to the original without corrupting any data.
 #+BEGIN_SRC python
