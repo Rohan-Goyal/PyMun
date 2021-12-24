@@ -37,9 +37,9 @@ Since the only samples of MUN documents I had were my own, some of the heuristic
 This requires manipulating word documents which have a complicated (and opaque) specification, so its difficult to do while preserving structure and formatting. More reliable ways to rewrite documents would make the auto-formatting feature more reliable. This could rely on existing libraries, or implement various useful functions (modifying formatting, etc.) by modifying the XML.
 
 *** Associate files with specific conferences, and sort them accordingly.
-Currently, files can be associated with committees, but not with dates or conferences. Doing so would let users `archive' past documents and focus only on present conferences, which my client noted would be quite helpful (see appendix E-1).
+Currently, files can be associated with committees, but not with dates or conferences. Implementing this would let users `archive' past documents and focus only on present conferences, which my client noted would be quite helpful (see appendix E-1).
 
-This would entail creating a new metadata tag, and new heuristics for extracting phrases that sounded like agenda/conference names. To make it useful, we would also need a user-facing mechanism for sorting documents based on whether or not they are archived, which may require creating add-ons to the Google Drive UI.
+This would require creating a new metadata tag, and new heuristics for extracting agenda/conference names. To make it useful, we would also need an interface for sorting documents based on whether they are archived, such as add-ons to the Google Drive UI.
 
 *** Performance Improvements
 As it stands, the program takes quite a long time to run, since it needs to download and process a lot of documents. There are a variety of changes which would likely improve performance. Caching document metadata, etc. might improve performance for frequently-changed documents, albeit at the cost of more memory/disk space.
@@ -48,8 +48,8 @@ For Google Docs, it's possible to analyse the document without downloading it us
 
 Implementing this would require access to the Google Docs (not Drive) API, and some method to connect the Drive and Docs APIs, such as translating between references to files in Drive and actual documents based on their IDs.
 
-*** Rewrite based on official specs
-The current document parsing functions rely on XML parsing and on existing libraries, and as such they're necessarily imperfect. It is likely that a program which took into account the existing spec for docx files would be able to modify them while preserving structure and formatting, such as using the spec to identify which elements should be preserved and which should be manipulated.
+*** Rewrite based on official Word Document specifications
+The current document parsing functions rely on libraries (~python-docx~) which don't always conform to the official specifications for Word documents, and so they can't reliably be used to modify/auto-format documents. A program built based on the existing spec for docx files would be able to modify them while preserving structure and formatting, using the specification to identify which elements should be preserved and which should be modified. This would let me safely implement the auto-formatting feature, which would be a useful feature for users.
 
 However, since Microsoft Word is proprietary it's unknown how much they adhere to these open specifications, especially since there's known incompatibility between open tools (LibreOffice Writer) and MS Word. Thus, although it's certainly worth exploring, this idea might not be entirely successful.
 
@@ -61,7 +61,7 @@ Google Drive no longer allows files to exist in multiple folders. Instead, they 
 
 Implementing this feature would require using the ~requests~ library in Python to make calls to the API, using JSON and request parameters to specify commands, and defining functions to make common requests to the API based on certain parameters
 
-*Word Count: 500*
+*Word Count: 520*
 ** COMMENT Extensibility (Technical)
 I've used separation of concerns to decouple the UI presentation from the actual parsing of the settings. This means that UI improvements can be made with minimal hassle.
 Similarly, the 'customisable' elements, such as the custom rules for classifiers, are separated from the program's own heuristic classifications and encapsulated within their own functions. Thus, it would be easy to introduce additional rules without modifying the core logic of the program, and to introduce more specific filtering mechanisms.

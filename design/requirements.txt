@@ -1,0 +1,12 @@
+python-docx>=0.8.0
+requests>=2.25.0
+beautifulsoup4>=4.9.0
+docx2python>=1.27.0
+docx2txt>=0.8
+send2trash>=1.5.0
+urlextract>1.2.0
+pydrive2>=1.7.0
+flask>=1.1.0
+flask_wtf>=0.14.0
+werkzeug>=1.0.0
+wtforms>=2.2.0

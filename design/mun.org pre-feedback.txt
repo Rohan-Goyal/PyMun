@@ -1,0 +1,696 @@
+* Criterion A
+** Defining the Problem
+
+My client is ***, the supervisor of the school's MUN (Model United Nations) club. With her advice/supervision, I intend to develop a software solution which makes preparation for MUN easier for participating students.
+Presently, students preparing for MUN conferences face a variety of inconveniences when managing documents for various conferences. Without a tedious method of manually filing documents, links, resources, etc. it is easy to lose track of which documents correspond to which committee/agenda. It is also easy to lose track of resources and research - since research is often a mix of PDF files and links, searching for information across sources is hardly straightforward. Being able to index links and PDFs like this would make it a lot easier to write papers without getting lost in thousands of tabs.
+I intend to create a system which, based on some user configuration, is automatically able to track and manage information in a way optimised for MUN people. This includes being able to parse (and ideally process) semantic units such clauses, subclauses, paragraphs, conclusions, etc. Based on these, it will provide functions to search and sort documents. For instance, it might parse a "research notes" document into a series of factoids, which could be searched for in one window while editing a position paper in another.
+
+
+*** COMMENT Crud
+python application (with a minimal web GUI, and also a CLI so that I can actually use it) which, based on some simple initial configurations, is able to automatically create and analyse metadata for certain files, sort them into folders (including using links to show them in multiple folders). The solution will interface with the user's Google Drive using the PyDrive library/API, and manage documents that way.
+As a member of the MUN club myself, I've faced these problems and in my experience they aren't exactly
+- Managing documents which have different kinds, different committees, and different agendas.
+- Dealing with structural requirements, formatting, etc.
+NOTE: This would be perfect with emacs yasnippet+swoop+org, but NO. Apparently most of the world is too dumb to use an editor from the 60s written in LISP.
+(I personally use linux, and can run python scripts without all that bother. But alas, other people use things not designed to be scripted and so I must use Drive APIs and PyInstaller).
+
+*** Success Criteria
+- Able to parse a Google docs document and add custom metadata tags.
+- Uses OAuth to access google drive, and stores client secrets securely.
+- Tags/metadata includes the document type (position paper, research, free notes, clause/resolution drafts), committee, country, agenda.
+- Able to use links/references to place files in multiple folders based on metadata
+# - Has internal representation of folder hierarchies, files as objects, etc. (more design principle than criterion)
+- Able to classify and auto-format different kinds of documents.
+- Process documents, and interpret them as data structures (whether through markup language, hashtables, trees, whatever) which enable better parsing, searching and formatting of documents
+- Auto-formats clauses, including indentation, lists, sublists, etc.
+- Has ability to handle ambiguity or poorly-formatted documents.
+- Presumably does this through parsing ambiguous sections as something like annotations, and parsing the rest.
+- HTML GUI (localhost) which could be operated by a child of five (with regards to Groucho Marx)
+- Able to manage research resources, including dealing with links
+- Extracted links should automatically include title, metadata
+- Integrates with existing document management systems (whether Zotero, Onedrive, Google Drive, etc.)
+# [IDEA: Check browser tabs to see if file is open before edits. Use brotab]
+
+**** Functionality
+- Attach custom tags to documents
+- Put links in folders accordingly
+- For clause/resolution docs, auto-format the commas, semi-colons, sublists, etc.
+# - GDrive GUI option to archive a particular conference folder: Adds the "archive" tag/metadata to all assoc'd files
+- Replace naked links (when it's just http://, no fancy link text) in documents with a markdown-style syntax that includes some link metadata (title, source)
+
+**** Configurability
+- Custom rules, for classifying documents, based on the following criteria:
+  - Contains <phrase>
+  - Name=<phrase>
+#  - Age=<number of days> (Age will be computed) based on the files last-modified date and the current date. All calculations will be done in UTC.
+
+
+*** Solution and Rationale
+My final decision was to create a Python application with a minimal web GUI that manages the user's Google Drive files. It will allow users to create their initial configuration, and based on this configuration, it will run in the background and "watch" their Google drive, making the requisite changes. Something like this requires the ability to auto-start and run in the background on the user's machine, and so it has to use a native program rather than a web app or electron monstrosity.
+It will be necessary to use a language that compiles easily for all systems, since the target audience uses a mixture of Windows and MacOS devices (I myself use Linux).
+I chose Python because it has a lot of simple libraries and APIs that can interface with google services. Specifically, google provides a set of APIs for dealing with docs, and third parties also provide more convenient wrappers such as PyDrive. Since much of the data will deal with semantic markup and document metadata, it will be represented internally using XML or JSON flat files. Python has excellent support for both of those, including converting them to and from native data structures.
+Furthermore, I have worked with python on previous projects in the past and so using something which I'm familiar with should save on development time and minimise errors.
+[20 more words]
+
+* Criterion B
+
+** COMMENT Record of Tasks
+See excel
+
+** Flowcharts
+*** Process of getting link metadata
+#+DOWNLOADED: file:///home/rohan/Downloads/code2flow_BVudc9.svg @ 2020-09-16 12:34:06
+[[file:Criterion_B/2020-09-16_12-34-06_code2flow_BVudc9.svg]]
+*** Iterate over the lines in a file, replacing links with a format including the metadata
+#+DOWNLOADED: file:///home/rohan/Downloads/code2flow_UwsW7j%20(1).svg @ 2020-09-16 12:33:41
+[[file:Criterion_B/2020-09-16_12-33-41_code2flow_UwsW7j%20(1).svg]]
+*** Batch Process: Wrapper function that calls all other subroutines in sequence
+#+DOWNLOADED: file:///home/rohan/Downloads/code2flow_BaieTB.svg @ 2020-11-15 17:30:01
+[[file:Criterion_B/2020-11-15_17-30-01_code2flow_BaieTB.svg]]
+
+** Designs
+*** TODO UI: Custom properties and custom rules (Figma or hand-drawn)
+*** Config options
+- Run every {n} minutes
+- Auto-format docs: y/n
+- Root path
+# NOTE: They fill in a path, which we convert to a drive folder_object. The program parses '/' as the top level and descends from there
+- Authorise and de-authorise buttons: Authorise calls the 'webserverauth()' method, allowing the user to re-authorise the app
+- Link to take you to the folder in Gdrive
+- A section for custom rules
+
+*** Config internal representation (JSON file)
+#+BEGIN_SRC json
+{"delay":5,
+ "autoformat":true,
+ "root":"/mun",
+ "folder-link":"This will be generated based on folder-ids and the root path",
+ "custom-rules":
+    {"name": [{"regex":"[Pp]osition [Pp]aper","type":"position paper"}],
+    "contains":[{"regex":"Urges","type":"resolution"}]}
+
+}
+#+END_SRC
+
+*** Metadata format:
+#+BEGIN_SRC python
+metadata = {
+    "type": ("source", "notes", "position paper", "resolution"),
+    "agenda": "string",
+    "committee": "string",
+    "country": "string",
+    "filetype": ("[m]html", "pdf", "docx", "googledoc", "md", "org", "misc"),
+}
+#+END_SRC
+
+*** Heuristics for defining document type
+#+BEGIN_SRC python
+if mime in ("HTML", "MHTML", "PDF"):
+    return "source"
+
+if mime in ("docx", "google docx", "md"):
+
+    if document.matches("\w* https://\w*/ \w*"): # A link surrounded by words. Common in notes, not in papers
+        return "notes"
+
+    doctree=Tree(document) # # Trees based on paragraphs, lists, linebreaks, etc.
+    lists=[(l, l.depth()) for l in document.lists] #Depth is how far it is nested
+    if max(lists, key=lambda elem:elem[0])>=2: # Depth 0 means shallow. Searches for the highest depth in the document, i.e the most nested lists we have.
+        return "resolution"
+#+END_SRC
+
+*** Clause data structure
+An MUN clause is basically a statement, which can have an arbitrary number of subclauses, each of which can have an arbitrary number of sub-subclauses, and so on until infinity.
+Thus, the ideal data structure for representing an MUN resolution (a collection of clauses) is using a structure based on a tree. Each clause will have a root, which is the text of the clause as a string. It will also have children, which themselves are clauses with roots and children: The bottom-level, or end of a clause, is when all of it's children have no children of their own and the tree terminates.
+# NOTE: For this, consider replacing with pseudocode
+# TODO: Add flowcharts for some, in place (or alongside pseudocode)
+#+BEGIN_SRC python
+class Tree:
+    def __init__(rootstring):
+        self.root=rootstring
+        self.children=[]
+
+    def addChild(self, child):
+        self.children.append(Tree(child))
+        pass
+
+    def getChild(self, n):
+        return self.children[n]
+
+    def getNestedChild(self,*args):
+        if len(args)==1:
+            return self.getChild(self, args[0])
+        else:
+            return self.getNestedChild(self,args[1:])
+#+END_SRC
+
+*** Sample directory structure
+- /
+  - MUN
+    - Agenda: Combating digital terrorism
+    - Agenda: Tourism after COVID-19
+    - Position Papers
+    - Resolutions
+    - Notes
+    - Resources
+    - Recent
+    - All Documents
+
+** Testing
+*** Preliminaries (setup)
+- Create a throwaway Google account
+- Copy my various MUN documents/notes from my main Drive to the new Drive
+- Authorise my program to use this account
+
+*** Unit tests
+
+**** Drive retrieval/metadata manipulation functions
+ Call the following code (It finds a file, reads the content, adds metadata, and reads that new metadata:
+ #+BEGIN_SRC python
+ x=getFile('Position Paper')
+ print(readDriveFile(x))
+ y=add_metadata(x,{'type':'position paper'})
+ y.upload()
+ print(get_metadata(y))
+ #+END_SRC
+It should run without error and print {type:position paper}
+
+**** Link/html metadata functions
+#+BEGIN_SRC  python
+print(get_html_data("./un_resolutions.html"))
+print(get_link_data("https://www.un.org/securitycouncil/content/resolutions-0"))
+#+END_SRC
+
+**** Auto-formatting functions on a local document
+- Create a local Word/Docx file with some intentional formatting errors (based on tinkering with an old MUN document a friend of mine created).
+- Pass it through the auto-formatter. Inspect the output- this must be done by eye.
+
+**** Referencing/linking functions
+#+BEGIN_SRC python
+folder=createFolder('mun-unit-test')
+folder.Upload()
+paper=getFile('mun-paper')
+link=createLink(paper,folder)
+link.Upload()
+#+END_SRC
+On visiting the folder in the Drive web interface, there should be a folder mun-unit-test with a file mun-paper in it.
+
+**** Link replacer functions
+#+BEGIN_SRC python
+fname="~/tmp/IOC_Extract.docx"
+d=replaceLinks(fname)
+d.save(f"{fname.replace('.docx','')}-links_replaced.docx")
+#+END_SRC
+This should replace all the links in the given file with a string that includes metadata, and write that new file to the file ~{fname}-links_replaced.docx~. Then inspect that file to ensure link replacement went properly.
+
+*** Integration tests
+**** Metadata tagging functions
+Call the ~classifier()~ function on 3 different kinds of documents in Google Drive, inspect the output to make sure it aligns with my expectations
+
+**** Document parsing/interpretation suite
+- Create a Google doc with 3 top-level clauses, each with a certain number of sub- and sub-sub-clauses.
+- Load that document.
+- Call the parse function on the loaded document, and save the result into a variable
+- Print the first full clause of the variable.
+- Print the second subclause of the second clause, top-level only.
+
+**** UI
+- Execute the file webform.py, and navigate to http://127.0.0.1:5000.
+- The web UI should be a form with buttons and text fields, structured in line with the design.
+- Write some values in the fields, and press 'Save Settings'.
+- Check the file config.json: The file should reflect the typed values.
+- Click the 'view folder' link. It should go to the proper folder.
+*** Performance/stress-testing
+- Upload a large amount of MUN files (specifically, all of my notes and research for a particular conference) to a particular folder in Google Drive
+- Point the program to that folder using the configuration.
+- Run the program with the following prefix ~perf-record~. This profiles the memory, cpu, used by the program and writes it to the file perf.data
+# Consider using  ~systemd-run --scope -p MemoryMax=300M CPUQuota=200%~
+- Note the start time
+- Continue using my computer to do whatever I want
+- If the computer slows down due to the program running, this means it is insufficiently optimised.
+- Note the time when the program exits
+- Look at the values in perf.data. If the program takes up more than 250MB of RAM or more than 10% of CPU on average, it needs further optimisation.
+
+** COMMENT Flowcharts
+- Auto-formatting: Indentation
+
+* Criterion C
+** UML
+# TODO Illustrate how doc becomes tree
+
+*** getMainFolder() function: Given a file path, retrieve the Google Drive File resource at that path
+
+#+DOWNLOADED: file:///home/rohan/Downloads/mainfolder.svg @ 2020-10-11 17:00:35
+[[file:Criterion_C/2020-10-11_17-00-35_mainfolder.svg]]
+
+*** Document Classification Heuristic (Slightly simplified for brevity)
+
+#+DOWNLOADED: file:///home/rohan/Downloads/classify.svg @ 2020-10-11 17:00:28
+[[file:Criterion_C/2020-10-11_17-00-28_classify.svg]]
+
+*** Tree and Clause objects
+#+DOWNLOADED: file:///home/rohan/d/cs/ia/tree.svg @ 2020-10-11 17:02:12
+[[file:Criterion_C/2020-10-11_17-02-12_tree.svg]]
+
+** Code Structure
+I divided my code into 3 files: One which handled the interfacing with google drive, one which handled the manipulation of local Docx files, and one which handled the web GUI.
+
+*** Webform Structure
+#+DOWNLOADED: file:///home/rohan/Pictures/webform.png @ 2020-11-17 10:38:34
+[[file:Criterion_C/2020-11-17_10-38-34_webform.png]]
+
+*** Google Drive manipulation structure
+#+DOWNLOADED: file:///home/rohan/Pictures/utils.png @ 2020-11-17 10:39:31
+[[file:Criterion_C/2020-11-17_10-39-31_utils.png]]
+
+** Complex code and explanation
+# TODO: Add imenu screenshot/output, to show structure
+*** Data structures: Hash tables
+My program makes extensive use of dictionaries (key-value stores). The metadata that the program applies to documents is represented as a structured hashtable. I use a hashtable rather than an object because this allows them to be serialised to plaintext more easily, making it easier to send the data to the Drive API.
+#+BEGIN_SRC python
+  def createFolder(name, parent_id, drive=mydrive):
+      folder_metadata = {
+          "title": name,
+          # The mimetype defines this new file as a folder, so don't change this.
+          "mimeType": "application/vnd.google-apps.folder",
+          "parents": [{"kind": "drive#parentReference", "id": parent_id}],
+      }
+      return drive.CreateFile(folder_metadata)
+#+END_SRC
+
+I also use hashtables to store associations. For instance, I use a hashtable to associate common MIME types with informal names, such as associating ~application/vnd.openxmlformats-officedocument.wordprocessingml.document~ with ~"word"~. This lets me refer to the informal name in my program and interface, which is cleaner and also more abstract - if the mimetype changes or I wish to add new ones, I need only tinker with the conversion table rather than rewrite any logic.
+
+#+BEGIN_SRC python
+    conversion_table = {
+        "application/vnd.google-apps.document": "gdoc",
+        "application/pdf": "pdf",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "word",
+        "text/html": "html",
+        "message/rfc822": "mhtml",
+        "application/x-mimearchive": "mhtml",
+    }
+#+END_SRC
+
+*** File/Data: JSON
+Students have very different workflows for how they manage documents, so the program must be configurable. To that end, I introduced options and switches that modify the programs behaviour. For instance, the user may decide which folder to store their documents in, and my program automatically finds that folder in Google Drive.
+User data must be persistent (clearly), and so I store it as JSON, in a file named "config.json".
+
+#+BEGIN_SRC python
+config = json.load("./config.json")
+folderpath = config["root"]
+if "folder-link" not in config:
+    folderlink = getMainFolder(folderpath)["alternateLink"]
+    config["folder-link"] = folderlink
+    json.dump(config, "./config.json")
+# Snippet reads the json file, gets the path of the folder, and converts it to a link to the relevant Google Drive folder.
+# getMainFolder() is defined elsewhere in the code.
+#+END_SRC
+
+*** GUI: HTML
+Although Python is system-agnostic, since most people don't have python pre-installed on their systems (and by 'most people' I mean Windows users, who are a perpetual thorn in my side) it needs to be compiled for specific OS's.
+Since compiling python with GUI libraries is difficult, I chose to use an HTML+JS form as my GUI. My program runs as a webserver on the user's local computer, and serves them an HTML page. When the users save their settings in the GUI, the Python script inspects the form, parsing it into the requisite JSON.
+In order to make the GUI palatable, I used the bootstrap framework, which provides default CSS for web pages:[fn:1]
+
+
+#+DOWNLOADED: file:///home/rohan/Pictures/1603364009.png @ 2020-10-22 14:53:43
+[[file:Criterion_C/2020-10-22_14-53-43_1603364009.png]]
+
+*** Data structures: Trees
+MUN Clauses can be arbitrarily nested- it is possible for a clause to have subclauses, each of which have sub-subclauses, and so on. In order to represent this, I needed a fundamentally recursive data structure. I settled on using a tree, since structured documents (such as markdown files) are parsed as trees. My tree structure uses a list to represent its children (any node can thus have arbitrarily many children, and any node can be individually accessed), which eliminates limitations on the number of children per node.[fn:2]
+
+#+BEGIN_SRC python
+class Tree:
+    # Attributes: A list of children, all of whom are either trees or empty.
+    def __init__(self, rootstring, parent=None):
+        self.root = rootstring
+        self.children = []
+        self.parent = parent
+
+    def __str__(self):
+        return self.root
+
+    def addChild(self, child):
+        self.children.append(Tree(child, self))
+#+END_SRC
+
+*** Recursion: getNestedChild and maxDepth
+I defined a basic algorithm ~maxDepth~ that traverses a tree to find the deepest nested node. This can determine the level of clause nesting in a resolution, and thus identify whether a document is a resolution or not. It's also vital for understanding the structure of a document when auto-formatting.
+
+Similarly, I designed an algorithm ~getNestedChild~, which can identify elements in a tree by their "coordinates", so to speak. For instance, to get the first child of the first child of the root node, you would call ~getNestedChild(0,0)~. The algorithm recursively descends the tree, and with each level it descends it slices off the first argument (i.e coordinate), eventually navigating the tree with minimal overhead.[fn:3]
+
+#+BEGIN_SRC python
+    def maxDepth(self):
+        if self.children:
+            depths = [i.maxDepth() for i in self.children]
+            return max(depths) + 1
+        else:
+            return 0
+        # Tree with only one node (no children) registers as depth 0.
+
+    def getChild(self, n):
+        return self.children[n]
+
+    def getNestedChild(self, *args):
+        if len(args) == 1:
+            return self.getChild(args[0])
+        else:
+            return self.getChild(args[0]).getNestedChild(*args[1:])
+#+END_SRC
+
+*** Tree objects and inheritance
+In addition to the basic Tree object I defined, I defined a subclass 'clause'. This inherits methods such as ~__init__~ and ~maxdepth~ from ~Tree~, but includes new methods such as ~fromDocArr~, allowing us to construct a specialised tree from a word document. It also includes methods such as ~~format~~.
+#+BEGIN_SRC python
+class Clause(Tree):
+
+    #    @staticmethod
+    def fromDocArr(docArr):
+        root = Tree("Document Start")
+        toplevels = "Everything without a tab in front"
+        indices = "That but indices"
+        toplevels = [Tree(i) for i in toplevels]
+        # Omitted for brevity
+
+    def appendOrReplace(target, replacer):
+        # Check if the last char is punctuation. If so, replace it with replacer. Otherwise, append replacer to target.
+        last = target[-1]
+        if last in "!&*-;:,.?":
+            target[-1] = replacer
+            return target
+        else:
+            return target + replacer
+
+    def format(self):
+        # Regardless of nesting level, we basically have a semicolon at the end of every sub* clause except the last one, which has a.
+        # So for every clause, I'd suggest children[-1] have a fullstop added. For the rest, if they have children, append a ":", else append a ";"
+        # If the last char is a punctuation mark, replace it, otherwise append.
+        body = self.root
+        if self.children:
+            self.appendOrReplace(":")
+        else:
+            self.appendOrReplace(";")
+#+END_SRC
+*** Libraries
+My solution interfaces with external libraries and APIs. For instance, it uses the ~pydrive2~ library to interface with Google Drive, such as to retrieve documents and manipulate metadata.
+It also uses the library ~python-docx~ to parse word documents. Specifically, it uses the ~docx2python~ function to convert a document into a structured array based on its XML representation. Using optimized libraries like this improves performance, and means fewer bugs - I don't have to exhaustively study the Word document specification and parse it manually, which simplifies the code a great deal.
+In addition to these, I use elements from the standard library to deal with JSON serialisation, file management, network requests, URL parsing, etc. Since much of the standard library is precompiled C, it's more performant than writing my own implementations.[fn:4]
+
+#+BEGIN_SRC python
+from pydrive2.auth import GoogleAuth
+from pydrive2.drive import GoogleDrive
+from urllib.parse import urlparse
+from bs4 import BeautifulSoup
+#+END_SRC
+
+#+BEGIN_SRC python
+import docx
+from docx2txt import process as asTxt
+from os import path
+from docx2python import docx2python as asArr
+from pprint import pprint
+from re import findall
+#+END_SRC
+
+*** Quasi-functional programming: Optimising Network Calls
+In testing the program, I discovered that calls to ~Upload()~ and ~Download()~ from the Google Drive API were by far the most expensive components of my programming. To minimise these, I borrowed some ideas from functional programming. Instead of uploading the file with each function, the function simply accepts a DriveFile object (defined in the Pydrive2 library) and returns a modified version of the object. Thus, I can chain multiple such functions together and simply upload the last returned object, with all the changes made, which greatly increases the programs performance.
+
+#+BEGIN_SRC python
+# An example of quasi-functional code
+def createFolder(name, parentId, drive=mydrive):
+    """Creates and returns a drive folder within the path specified by parentId, and with the given name. If one exists already, return that instead
+
+    :param name: The name of the folder
+    :param parentId: The Id of the folder in which the new folder should be created
+    :param drive: The GoogleDrive object representing a drive to modify
+    :returns: An existing folder, if one is found, else a new one with the specified name and parent
+    :rtype: DriveFile object
+
+    """
+    folderMeta = {
+        "title": name,
+        # The mimetype defines this new file as a folder, so don't change this.
+        "mimeType": "application/vnd.google-apps.folder",
+        "parents": [{"kind": "drive#parentReference", "id": parentId}],
+    }
+    x = getExistingFolder(name, parentId, drive)
+    return x if x else drive.CreateFile(folderMeta)
+# If a folder with that name already exists at that path, just return that instead of creating a new on# If a folder with that name already exists at that path, just return that instead of creating a new onee
+#+END_SRC
+
+*** Advanced Data Structures: Navigating nested arrays
+In order to extract metadata from documents, I had to traverse an arbitrarily-nested array. To handle this neatly, I defined a recursive ~flatten~ function. Since it deals exclusively with lists and tuples, it uses the python construct ~yield~ instead of return. Thus, it returns individual elements, which automatically accumulate into an iterable[fn:5].
+#+BEGIN_SRC python
+def flatten(iterable):  # WARNING: Does not work on dicts
+    it = iter(iterable)
+    for e in it:
+        if isinstance(e, (list, tuple)):
+            for f in flatten(e):
+                yield f
+        else:
+            yield e
+# Recursively expands everything until it stops being a list/tuple.
+#+END_SRC
+
+*** List comprehensions and filtering
+Python has a quasi-functional construct known as list comprehensions, which implement the equivalent of ~map~ and ~filter~ functions. I use these to manipulate arrays, calling functions on individual elements and/or filtering arrays.
+#+BEGIN_SRC python
+clean = flatten(docArr)  # Each elem of clean is a line of text
+lowered = [i.lower() for i in clean]
+meta = [i for i in lowered if ":" in i or "-" in i]
+agenda = [i for i in meta if "topic" in i]
+committee = [i for i in meta if "committee" in i]
+country = [i for i in meta if "country" in i]
+# Using list comprehensions to find lines which may contain useful metadata about documents and save them to a list for further processing.
+#+END_SRC
+*** File manipulation
+For various reasons, the ~python-docx~ library is unable to read or modify hyperlinks in a document. Thus, I had to interact with word files directly. Word files are just a collection of XML files, the main one being document.xml. I worked with file structures to create an automated pipeline that extracts a word document as a zip file, modifies it, and writes it back to the original doc without corrupting any data.[fn:6]
+#+BEGIN_SRC python
+def writeToDoc(folderPath):
+    """Write a folder (the result of unzipping a word doc) to a word doc
+
+    :param folderPath: Path of the unzipped word doc
+    :returns: Path to the created docx file
+    :rtype: Path
+
+    """
+    docPath = folderPath.resolve().parents[1] / (folderPath.name + ".docx")
+    # pyMUN folder, then find the filename
+    d = shutil.make_archive(docPath, "zip", folderPath)
+    shutil.move(d, docPath)
+    return docPath
+
+
+def getDocumentFile(folderPath):
+    """Given the path to an unzipped word doc, find actual document.xml file
+
+    :param folderPath:Path to word doc (zip file)
+    :returns: Path to the document.xml file contained within it
+    :rtype: String (path)
+
+    """
+    return (
+        f"{folderPath}word/document.xml"
+        if str(folderPath)[-1] == "/"
+        else f"{folderPath}/word/document.xml"
+    )
+#+END_SRC
+*** Storing form responses using 2d arrays
+The ~custom-rules~ section of the form includes a list of rules, each with the following structure: ~[searchtype, searchtext, doctype]~. For instance, a rule might have ~[fulltext, urges, position]~, indicating any document containing the word 'urges' should be classified as a position paper. I stored the rules in a ~nx3~ matrix, and used that to translate them into a JSON representation.
+
+#+BEGIN_SRC python
+rule_matrix = [
+    request.form.getlist("type"),
+    request.form.getlist("text"),
+    request.form.getlist("doctype"),
+] # Individual column of the form (type,text,doctype)
+rule_count = len(rule_matrix[0])
+rule_json = {"name": [], "contains": []}
+for i in range(rule_count):
+    formatted_rule = {"regex": rule_matrix[1][i], "type": rule_matrix[2][i]}
+    rule_json[rule_matrix[0][i]].append(formatted_rule) # Appends to either "name" array or "contains" array, depending on the type of rule
+#+END_SRC
+*** Jinja Templates: Abstracting UI from logic
+My UI is in HTML, using the Jinja2 templating engine. I used Flask and WTForms to define the relevant fields with attributes, and created a Jinja template which automatically loads this text when rendered. Thus, I was able to separate the interface from the design (of the form fields and description) and the logic[fn:7].
+#+BEGIN_SRC html
+<form action="" method="post" role="form">
+    <div class="form-group">
+        <p>{{ form.delay.label }}<br>
+            {{ form.delay(class_="form-control") }}
+        </p>
+        <small class="form-text text-muted">{{ form.delay.description }}</small><br>
+#+END_SRC
+#+BEGIN_SRC python
+class ConfigForm(FlaskForm):
+    delay = TextField(
+        "Delay:", description="Time between program updates/runs (in minutes)"
+    )
+# Partial sample only, for brevity
+#+END_SRC
+*** Flask?
+** Sources
+    • Altenkirch, T., 2020. Coding Trees In Python. [video] Available at: <https://www.youtube.com/watch?v=7tCNu4CnjVc> [Accessed 10 October 2020].
+
+    • Canny, S., 2020. Python-Docx — Python-Docx 0.8.10 Documentation. [online] Python-docx.readthedocs.io. Available at: <https://python-docx.readthedocs.io/en/latest/index.html> [Accessed 10 October 2020].
+
+    • Canny, S., 2020. Working With Text — Python-Docx 0.8.10 Documentation. [online] Python-docx.readthedocs.io. Available at: <https://python-docx.readthedocs.io/en/latest/user/text.html> [Accessed 10 October 2020].
+
+    • Google API Team, 2020. Googleapis/Google-Api-Python-Client. [online] GitHub. Available at: <https://github.com/googleapis/google-api-python-client> [Accessed 10 October 2020].
+
+    • Google Developers, 2020. Google Workspace And Drive MIME Types  |  Google Drive API. [online] Google Developers. Available at: <https://developers.google.com/drive/api/v3/mime-types> [Accessed 10 October 2020].
+
+    • Google Docs Developers, 2020. Python Quickstart  |  Google Docs API  |  Google Developers. [online] Google Developers. Available at: <https://developers.google.com/docs/api/quickstart/python> [Accessed 10 October 2020].
+
+    • Google Docs Developers, 2020. REST Resource: Documents  |  Google Docs API  |  Google Developers. [online] Google Developers. Available at: <https://developers.google.com/docs/api/reference/rest/v1/documents#Document> [Accessed 10 October 2020].
+
+    • Google Drive Developers, 2020. Files  |  Google Drive API  |  Google Developers. [online] Google Developers. Available at: <https://developers.google.com/drive/api/v3/reference/files> [Accessed 10 October 2020].
+
+    • Google Drive Developers, 2020. Files: Export  |  Google Drive API  |  Google Developers. [online] Google Developers. Available at: <https://developers.google.com/drive/api/v3/reference/files/export> [Accessed 10 October 2020].
+
+    • Google Drive Developers, 2020. Files: List  |  Google Drive API  |  Google Developers. [online] Google Developers. Available at: <https://developers.google.com/drive/api/v2/reference/files/list#python> [Accessed 10 October 2020].
+
+    • Google Drive Developers, 2020. Search For Files And Folders  |  Google Drive API  |  Google Developers. [online] Google Developers. Available at: <https://developers.google.com/drive/api/v2/search-files> [Accessed 10 October 2020].
+
+    • Gwak, J., 2020. Iterative/Pydrive2. [online] GitHub. Available at: <https://github.com/iterative/PyDrive2> [Accessed 10 October 2020].
+
+    • Gwak, J., Blevins, S. and Nabel, R., 2020. Quickstart — Pydrive 1.3.0 Documentation. [online] Gsuitedevs.github.io. Available at: <https://gsuitedevs.github.io/PyDrive/docs/build/html/quickstart.html> [Accessed 10 October 2020].
+
+    • Gwak, J., Blevins, S. and Nabel, R., 2020. Welcome To Pydrive’S Documentation! — Pydrive 1.3.0 Documentation. [online] Gsuitedevs.github.io. Available at: <https://gsuitedevs.github.io/PyDrive/docs/build/html/index.html> [Accessed 10 October 2020].
+
+    • Jablonski, J., 2020. Python 3'S F-Strings: An Improved String Formatting Syntax (Guide) – Real Python. [online] Realpython.com. Available at: <https://realpython.com/python-f-strings/> [Accessed 10 October 2020].
+
+    • KFC, 2020. Model UN Made Easy: How To Write A Resolution - Best Delegate Model United Nations. [online] Best Delegate Model United Nations. Available at: <https://bestdelegate.com/model-un-made-easy-how-to-write-a-resolution/> [Accessed 10 October 2020].
+
+    • Malik, U., 2020. Reading And Writing MS Word Files In Python Via Python-Docx Module. [online] Stack Abuse. Available at: <https://stackabuse.com/reading-and-writing-ms-word-files-in-python-via-python-docx-module/> [Accessed 10 October 2020].
+
+    • Mozilla, 2019. Common MIME Types. [online] MDN Web Docs. Available at: <https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types> [Accessed 10 October 2020].
+
+    • Mozilla, 2019. MIME Types (IANA Media Types). [online] MDN Web Docs. Available at: <https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types> [Accessed 10 October 2020].
+
+    • Paloor, J., 2017. Python Program To Read A Url And Extract Its Meta Keyword And Meta Description. [online] Gist. Available at: <https://gist.github.com/jineshpaloor/6478011> [Accessed 10 October 2020].
+
+    • Python Software Foundation, 2020. Urllib.Parse — Parse Urls Into Components — Python 3.9.0 Documentation. [online] Docs.python.org. Available at: <https://docs.python.org/3/library/urllib.parse.html> [Accessed 10 October 2020].
+
+    • Pythonspot, 2020. Python Tree Data Structure. [online] pythonspot. Available at: <https://pythonspot.com/python-tree/> [Accessed 10 October 2020].
+
+* COMMENT Planning for the MUN product
+Today:
+- Comprehensive spec
+- Ms. Rizwana
+- Draft crit A.
+
+Reqs
+Filesearch
+Data structure manip
+Polymorph
+# Recursion
+OOP stuff
+= Libraries
+Multi-dimensional arrays
+= Complex data structs
+
+** Ideas
+[Digitile is a similar tool]
+*** Web
+- GDocs, etc. plugin
+
+
+*** Python
+- Gdocs tool. In essence, it has full access to a folder. Within that folder, there are a bunch of MUN files
+
+** Data struct thinking
+-
+-
+** Kinds of documents
+-
+* COMMENT Re-imagining the document classifier
+
+** Classifier
+*** Heuristics
+- DONE-ish List indentation
+- DONE Metadata presence? That's actually an interesting one, which I haven't considered before. If it has country, it's a position paper.
+- TODO Para structure
+- DONE Links
+- DONE List density (how much of the document is list)
+- TODO: More heuristics for identifying position papers. Draw the flowchart to make sure the ifs and fors are nested properly.
+**** Position paper
+- Short
+- Not many paragraphs
+- Metadata DONE
+- No links
+**** Plan
+The issue is reliably distinguishing between position papers and notes. So we should restructure the classifier function. There are two ways we can go: Simple and sophisticated
+***** Simple DONE
+- First, run a bunch of tests (list-based) to determine if it is or isn't a resolution. If it is, exit and return. We have a decent battery of tests so be a bit certain here
+- If not, run tests such as links, para structure, metadata, to check if it's position or notes. This is iffy, so don't be afraid to call it 'unclassified' if necessary.
+***** Complex
+- Break the document into a tree structure, and do all this stuff to the tree. This is just a nice-to-have, so don't implement it until everything else is done.
+
+**** Para structure testing TODO
+What are our options here? If it's >2 pages (TODO: How to check this) return notes
+If it's less than 2 pages, we can't consider paragraph length, but we can consider number of paragraphs.
+Maybe section count helps, but doubt it. So just use wordcounts, I guess. NOTE: Roughly 600 words/page. So that means <(900-1000) is our check.
+
+So now how do we go about this?
+We have the number of paras, and each of their wordcounts.
+From here we can do simple stats:  max,min, mean, etc.
+How can we use these? I'm not optimistic that we can, honestly.
+
+** Metadata extractor
+Question: Should we extract metadata after classification, or before? After might be better, since then we'll know what meta we can expect to look for. But we'll also need to take into account blackbox leakages from the classifier.
+So we should do it after, but include some checks to make sure we aren't looking for something that isn't there.
+For now, we have an ok hacky solution.
+Getting note metadata reliably: No idea. Basically, we can give them null metadata, or we can search for existing metadata(existing agenda etc which we've found from parsing papers and resolutions). This last one would be messy, and require us to create a messy text file. So every time we parse metadata, we also write it to a text file. Not in the spec, so don't do it for now. So this isn't going to be implemented for now"""
+
+** Treemaker
+
+** Autoformat
+Don't put too much work into this - make it perpetually beta, and warn people not to use it (TODO: Add that warning as placeholder (in red, naturally), into the main UI)
+* COMMENT Custom rules
+** TODO UI
+Define a 'component' of sorts (a horizontal form) that represents a customRule. When webform is initialised, it should read the custom rules and create components for each of them. Wrap all the components in a div or whatever. After the div, have a + button that adds a form element to the div using JS. This will be messy, and require duplication between JS and Py.
+*** TODO
+- Define component as JINJA template and/or JS var
+- Add button that calls the 'newRule' method
+- Define newRule in js.
+- Define autoload func in python (to automatically read the rules)
+- Define the py methods for writing these from the existing file: Add it to the conf_dict and prepopulate methods
+- That's basically it.
+ Oh god, we'll need to work with javascript or some kind of dynamic HTML.
+** DONE Implementation
+Basically, they give us three values: (Contains/name),(string),(classification).
+We should call this from the updateMetadata func. We first check the namerules, then the containRules, and if none of those work we use magicParse. So it accepts a result obtained by downloadHelper, which has the title, localpath, etc.
+So we pass the file object directly. We try it against the namerules, or
+* COMMENT Notes
+# - Time complexity/elegance
+# - Separation accomplished through templates
+# - Abstraction accomplished
+# - Global variables: I only require one.
+# - Input validation TODO
+# - Mention JINJA: TODO
+- Questions: How many flowcharts for each criterion?
+* COMMENT Feedback <2020-12-08 Tue>
+- No names in final document (Format)
+- Add TOC of sorts of complex code techniques. (Format)
+- Defend why I used techniques: Too many buzzwords as it stands. Focus on justification/valuing
+- Make it clear.
+- Go through and remove the unnecessary words.
+- Remove the jokes
+- Add in-text citations where apt, for things like trees and APIs.
+- Consider briefly annotating some entries with things like <library>, <documentation>, <theoretical reference>, etc. (Think about how to do this)
+- Consider doing that via formatting/colours
+- Add a blanket disclaimer to sources
+
+* Footnotes
+
+[fn:7] Cite Jinja doc
+
+[fn:6] Cite word-doc/xml related stuff here
+
+[fn:5] Can I cite yield?
+
+[fn:4] I can cite everything here
+
+[fn:3] Pythonspot trees
+
+[fn:2] Computerphile trees
+
+[fn:1] Bootstrap

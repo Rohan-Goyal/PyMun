@@ -1,0 +1,135 @@
+* MUN
+TODO: Reach out to Ms Rizwana
+** Preparation
+** Research/resource management
+Wiki-style tool to help people link notes together, etc.
+
+An orgtool specifically designed for MUN. So clearly demarcated sections for various elements, including various tools to make it easier, such as:
+** 
+Clause autoformatting
+Position paper templating, and wordcount managers (so when you get above 550 it glows red or something).
+An interface to shared google docs for resolutions.
+
+If I want to be lazy, a silo'd electron app like franz with tabs. 
+Do you know what we call a tabbed electron app? A discount browser, that's what. 
+Try to keep my dignity, but CEF might be necessary.
+
+
+** In conference
+*** Organisers/secgen/logistics
+A better method of keeping track of interactions and points.
+Conference scheduling is unlikely, since there's a subtle, human aspect to that.
+
+
+*** Delegates
+DIAMUN rip-off:
+Account+chat system with decent security, 
+Ability to chat
+Include autoformatting for clauses and subclauses using HTML lists
+Easily share files: Dropbox/Gdrive plugin might be apt
+
+* Draft letter
+Subject: Computer Science IA: MUN-related project 
+Dear Ms Rizwana,
+Thanks very much for agreeing to this; I look forward to the project. 
+I was wondering, are there any specific ideas you would like to see implemented or problems you think could be solved? I don't know much about what sort of difficulties are faced by the organisers and chairs of MUN conferences, so I feel like that avenue might be worth discussing.
+
+
+
+
+Alternatively, I have some potential ideas of my own which would be useful mostly to delegates at a conference:
+Implementing something similar to the app we saw at DIAMUN- however, having seen and used that app I think we could build something similar but more usable.
+Developing a tool to help delegates manage files and resources. For instance, a Google drive plugin that can automatically sort documents by agenda and format clauses and subclauses. 
+
+
+
+One idea I'd be interested in developing would be some kind of tool to help delegates manage their files and resources. I was considering writing an extension to Chrome or a Google docs plugin that is tailored specifically to MUN. As a partial example, it might automatically sort documents by committee and agenda by searching for text in them.
+Another idea I had was to try to implement something similar to the app we saw at DIAMUN. I have some potential ideas as to how we could build a similar thing, but learn from their mistakes and improve it.
+
+
+
+
+
+. It would also handle some of the more tedious aspects of MUN such as generating editable templates and formatting clauses, and  
+
+
+* WNR
+** Scheduling/management thing, controlled by Ms Rekha.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+* WnR data analysis
+Filter out non-RWA results
+Sort results first by grade group: Primary, secondary, upper secondary, whatever. 
+Sort results by grade.
+
+
+
+
+
+* Ideas
+** Data
+** Frontend/client 
+** Extending something 
+*** 
+* Clients
+Teachers
+GoRise
+Something something social good. 
+
+** Social good ideas:
+Data analysis software for an NGO.
+Frontend 
+
+Slack/managebac integration.
+Slack project management for students/teachers. 
+
+
+Either console, web, or PyQt/GTK.
+
+* MUN
+** Backend (staff, chair, etc.)
+Keeping track of what delegate said what
+Points/judgement
+Managing the time
+
+** Frontend (delegate)
+Rip off DIAMUN, but properly
+*** Reqs
+Chat
+File sharing: Between people, and collectively to everyone in the group.
+
+** Drafting
+Sir,
+For my IA there's a company my father knows who I'll be working with over the summer. I've been talking with them about what exactly I'm doing (TODO: Details).
+
+In this situation, would you advise that I go forward with this as my IA, or should I reach out to a teacher? My backup option is to work with Ms. Rizwana on developing a web app or browser extension that helps students handle their documents. In essence, it would be a Google Drive/Docs/etc. plugin that optimises the file manager for MUN, with features like automatically classifying and cross-referencing documents based on their text and formats, etc, and others that are to-be-determined.
+
+IDEA: XML representation of MUN papers: Clauses, resolutions, etc.
+
+
+* Teachers
+* Extending something
+WnR related: Perhaps re-working my extension.
+Data analysis for the survey. Perhaps a generalised suite of data analysis tools. 
+** Web extension
+
+
+* Rewrite my calendar thing, find a good client.  
+However, this would require looking at that thing again. Might be worth it: This time I could do it properly, 
+

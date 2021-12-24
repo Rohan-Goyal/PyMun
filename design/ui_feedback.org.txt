@@ -1,0 +1,7 @@
+* Appendix B-2: Client feedback on designs
+- Overall, client likes UI, especially the familiar style and clear labelling
+** Suggestions
+- Have UI auto-open when the app is called, to avoid users from having to navigate to it.
+- Introduce more padding/spacing between elements (current design is claustrophobic)
+- Increase font size, since product is desktop-only
+- Make the button to add a new custom rule more prominent/explicit, both via size and color if necessary.
